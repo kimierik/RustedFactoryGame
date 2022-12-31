@@ -45,7 +45,7 @@ impl PlayerActions{
             PlayerActions::MovePlayerLeft=>game.change_player_location_x(-1.0),
             PlayerActions::MovePlayerRight=>game.change_player_location_x(1.0),
 
-            PlayerActions::Demolish=>panic!("not implemented"),
+            PlayerActions::Demolish=>panic!("Demolish action, not implemented"),
             PlayerActions::MakeFactory=>game.check_and_place_tile(State::FactoryBlock),
             PlayerActions::MakeDefault=>game.check_and_place_tile(State::DefaultBlock),
             PlayerActions::NoAction=>(),

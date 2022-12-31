@@ -28,8 +28,8 @@ pub struct MainState {
     resources: GameResources,
     //keeps time between resource collections
     time_since_last_collection_cycle: Instant,
-    //keyboard map
-    key_map:HashMap<ggez::input::keyboard::KeyCode,PlayerActions>,
+    //keyboard related data, keymap and input handling related data
+    input_data:inputs::keyboard_input_data::InputData,
 }
 
 impl MainState {
@@ -40,7 +40,8 @@ impl MainState {
             screendata: ScreenInfo { tile_size: 20.0 },
             resources: GameResources::make_instance(),
             time_since_last_collection_cycle: Instant::now(),
-            key_map:inputs::update_key_bindings(),
+
+            input_data:inputs::keyboard_input_data::InputData::new(),
         }
     }
 
@@ -102,7 +103,14 @@ impl MainState {
     }
 
     pub fn get_key_map(&self)->&HashMap<ggez::input::keyboard::KeyCode,PlayerActions>{
-        &self.key_map
+        &self.input_data.key_map
+    }
+    pub fn get_input_data(&self)->&inputs::keyboard_input_data::InputData{
+        &self.input_data
+    }
+
+    pub fn get_mut_input_data(&mut self)->&mut inputs::keyboard_input_data::InputData{
+        &mut self.input_data
     }
 
     pub fn reset_time_since_collect(&mut self) {

@@ -1,4 +1,3 @@
-use core::fmt;
 use std::collections::HashMap;
 use std::io::{BufReader, BufRead};
 
@@ -10,6 +9,7 @@ use super::MainState;
 
 
 pub mod player_actions;
+pub mod keyboard_input_data;
 use player_actions::PlayerActions;
 
 
@@ -20,13 +20,14 @@ use player_actions::PlayerActions;
 //public interfaces
 //update keybindings
 //handle KeyboardInputActions
+//there are orphan functions in this file. do something about them
 
 //all actions the player can do
 
 
 
 
-//this can be fixed if we can implement fmt to keycode
+//this can be fixed if we can implement fmt display to keycode
 //or some other way to turn this enum to a string or char
 fn get_enum_from_char(find:char)->KeyCode{
     match find {
@@ -89,9 +90,10 @@ pub fn update_key_bindings()->HashMap<KeyCode,PlayerActions>{
         //line should looke like this K:MakeFactory;
         //match string[0] with a string version of keycode enum
         //do same with our enum
+        //PlayerActions enum as a string
         let mut enumstring:&str="NoAction";
 
-        //?
+        //this can be moved to a function to make it cleaner
         for (ind,charac) in line.as_bytes().into_iter().enumerate(){
             if charac.clone() as char==':'{
                 //where the enum starts index of charac
@@ -115,37 +117,51 @@ pub fn update_key_bindings()->HashMap<KeyCode,PlayerActions>{
 }
 
 
+//finds key from the hash keybindings and activates its effect if there is one
+fn activate_key(key:&KeyCode,game:&mut MainState){
+    let action =game.get_key_map().get(key);
+    match action {
+        Some(action)=>action.apply_effect(game),
+        None=>()//no key found in keymap
+    }
+}
 
 
-//idk if small irersponsiveness but fix on remake
-//prob just no money no irresponsiveness
-//this can be fixed to loop every key that is pressed then apply_effect
-//
-//this would need some way to turn a "keycode" into enum keycode 
-//or not just some no key value to be returned that returns noacton always
+
+
+
+//loops all keys and activates its effect if it exists
 pub fn handle_keyboard_inputs(game: &mut MainState, ctx: &mut ggez::Context) {
-    if ctx.keyboard.is_key_just_pressed(KeyCode::D) {
-        game.get_key_map().get(&KeyCode::D).unwrap().apply_effect(game);
+
+    let currently_pressed_keys=ctx.keyboard.pressed_keys();
+    //loop through all currently pressed keys and see if we have allready handled them
+    for key in currently_pressed_keys{
+        if !game.get_input_data().is_key_handled(key){
+            activate_key(key, game);
+            game.get_mut_input_data().handled_keys.push(key.clone());
+        }
     }
 
-    if ctx.keyboard.is_key_just_pressed(KeyCode::A) {
-        game.get_key_map().get(&KeyCode::A).unwrap().apply_effect(game);
+    //remove handled key if it is not in currently_pressed_keys
+    //this way we can have a debounce
+    let mut keys_to_remove_from_handled:Vec<KeyCode>=vec![];
+    for handled_key in game.get_input_data().handled_keys.iter(){
+        let mut is_in_pressed=false;
+
+        for key in currently_pressed_keys{
+            if handled_key==key{
+                is_in_pressed=true;
+                //is in dont do anything
+            }
+        }
+        if !is_in_pressed{
+            keys_to_remove_from_handled.push(handled_key.clone())
+        }
     }
 
-    if ctx.keyboard.is_key_just_pressed(KeyCode::W) {
-        game.get_key_map().get(&KeyCode::W).unwrap().apply_effect(game);
+    //seacond loop so that the first mut ref of game goes out of scope
+    for i in keys_to_remove_from_handled.iter(){
+        game.get_mut_input_data().handled_keys.retain(|value| *value != i.clone());
     }
 
-    if ctx.keyboard.is_key_just_pressed(KeyCode::S) {
-        game.get_key_map().get(&KeyCode::S).unwrap().apply_effect(game);
-    }
-
-    //these can be changed to is key pressd if i want to paint
-    if ctx.keyboard.is_key_just_pressed(KeyCode::L) {
-        game.get_key_map().get(&KeyCode::L).unwrap().apply_effect(game);
-    }
-
-    if ctx.keyboard.is_key_just_pressed(KeyCode::K) {
-        game.get_key_map().get(&KeyCode::K).unwrap().apply_effect(game);
-    }
 }
