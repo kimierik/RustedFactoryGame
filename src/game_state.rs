@@ -17,9 +17,37 @@ use crate::inputs;
 
 
 //houses tilesize and camera pan offset, zoom etc
+//move to own file 
 pub struct ScreenInfo {
-    pub tile_size: f32,
+    tile_size: f32,
+    pan_offset:Cordinates,
 }
+
+impl ScreenInfo{
+    pub fn new()->Self{
+        ScreenInfo { 
+            tile_size: 20.0, 
+            pan_offset: Cordinates::from(0.0, 0.0)
+        }
+    }
+    pub fn get_tile_size(&self)->f32{
+        self.tile_size
+    }
+
+    pub fn get_pan(&self)->&Cordinates{
+        &self.pan_offset
+    }
+
+    pub fn offset_pan(&mut self,cords:Cordinates){
+        self.pan_offset=self.pan_offset+cords;
+    }
+
+    pub fn set_pan(&mut self,cords:Cordinates){
+        self.pan_offset=cords;
+    }
+
+}
+
 
 pub struct MainState {
     map: Vec<Tile>,
@@ -37,7 +65,7 @@ impl MainState {
         MainState {
             map: vec![],
             player: Player::new(),
-            screendata: ScreenInfo { tile_size: 20.0 },
+            screendata: ScreenInfo::new(), 
             resources: GameResources::make_instance(),
             time_since_last_collection_cycle: Instant::now(),
 
@@ -124,6 +152,10 @@ impl MainState {
 
     pub fn get_screen_info(&self) -> &ScreenInfo {
         &self.screendata
+    }
+
+    pub fn get_mut_screen_info(&mut self) -> &mut ScreenInfo {
+        &mut self.screendata
     }
 
     pub fn get_map(&self)->&Vec<Tile>{

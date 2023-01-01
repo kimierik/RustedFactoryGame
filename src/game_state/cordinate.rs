@@ -1,7 +1,7 @@
 use super::ScreenInfo;
 
 //global cord struct
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Cordinates {
     pub x: f32,
     pub y: f32,
@@ -14,7 +14,8 @@ impl Cordinates {
 
     //figureout how to do this properly
     pub fn world_to_screen(&self, screen: &ScreenInfo) -> Cordinates {
-        Cordinates::from(self.x * screen.tile_size, self.y * screen.tile_size)
+        let panned_cordinates=self-screen.get_pan();
+        Cordinates::from(panned_cordinates.x * screen.get_tile_size(), panned_cordinates.y * screen.get_tile_size())
     }
 
     //compare 2 Cordinates and see if they are the same
@@ -22,3 +23,31 @@ impl Cordinates {
         return self.x == cord.x && self.y == cord.y;
     }
 }
+
+
+
+
+
+//QOL implementations
+impl std::ops::Add<Cordinates> for Cordinates{
+    type Output = Cordinates;
+    fn add(self,addable:Cordinates)->Cordinates{
+        Cordinates { x: self.x+addable.x, y: self.y+addable.y }
+    }
+}
+
+impl std::ops::Add<&Cordinates> for &Cordinates{
+    type Output = Cordinates;
+    fn add(self,addable:&Cordinates)->Cordinates{
+        Cordinates { x: self.x+addable.x, y: self.y+addable.y }
+    }
+}
+
+impl std::ops::Sub<&Cordinates> for &Cordinates{
+    type Output = Cordinates;
+    fn sub(self,addable:&Cordinates)->Cordinates{
+        Cordinates { x: self.x-addable.x, y: self.y-addable.y }
+    }
+}
+
+

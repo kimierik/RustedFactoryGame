@@ -52,8 +52,8 @@ impl MakeDrawable for super::game_state::player::Player{
         let p = ggez::graphics::Rect::new(
             world_cords.x,
             world_cords.y,
-            screen.tile_size,
-            screen.tile_size,
+            screen.get_tile_size(),
+            screen.get_tile_size(),
         );
         let mesh =
             graphics::Mesh::new_rectangle(ctx, graphics::DrawMode::fill(), p, graphics::Color::RED)?;

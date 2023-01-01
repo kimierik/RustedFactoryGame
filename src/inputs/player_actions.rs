@@ -1,13 +1,22 @@
 
+use crate::game_state::cordinate::Cordinates;
+
 use super::*;
+use strum_macros::EnumIter;
+use strum::IntoEnumIterator;
 
 
-#[derive(Debug,Clone,Copy)]
+#[derive(EnumIter, Debug,Clone,Copy)]
 pub enum PlayerActions{
     MovePlayerUp,
     MovePlayerDown,
     MovePlayerLeft,
     MovePlayerRight,
+
+    MoveCameraUp,
+    MoveCameraDown,
+    MoveCameraLeft,
+    MoveCameraRight,
 
     Demolish,
     MakeFactory,
@@ -28,16 +37,6 @@ impl std::fmt::Display for PlayerActions{
 
 impl PlayerActions{
 
-    //returns something that we can use to iterate the playeractions enumn
-    //make into macro or something that upkeeps it self
-    fn get_enum_iterator()->[PlayerActions;8]{
-        use PlayerActions::*;
-        [MovePlayerRight,MovePlayerLeft,MovePlayerDown,MovePlayerUp,Demolish,MakeDefault,MakeFactory,NoAction]
-    }
-
-
-
-    #[allow(non_snake_case)]
     pub fn apply_effect(self,game: &mut super::MainState){
         match self {
             PlayerActions::MovePlayerUp=> game.change_player_location_y(-1.0),
@@ -45,17 +44,22 @@ impl PlayerActions{
             PlayerActions::MovePlayerLeft=>game.change_player_location_x(-1.0),
             PlayerActions::MovePlayerRight=>game.change_player_location_x(1.0),
 
+            PlayerActions::MoveCameraUp=>game.get_mut_screen_info().offset_pan(Cordinates { x: 0.0, y: -1.0 }),
+            PlayerActions::MoveCameraDown=>game.get_mut_screen_info().offset_pan(Cordinates { x: 0.0, y: 1.0 }),
+            PlayerActions::MoveCameraLeft=>game.get_mut_screen_info().offset_pan(Cordinates { x: -1.0, y: 0.0 }),
+            PlayerActions::MoveCameraRight=>game.get_mut_screen_info().offset_pan(Cordinates { x: 1.0, y: 0.0 }),
+
+
             PlayerActions::Demolish=>game.check_and_remove_tile(),
             PlayerActions::MakeFactory=>game.check_and_place_tile(State::FactoryBlock),
             PlayerActions::MakeDefault=>game.check_and_place_tile(State::DefaultBlock),
             PlayerActions::NoAction=>(),
         }
-
     }
 
 
     pub fn get_enum_from_string(find:&str)->Self{
-        for i in PlayerActions::get_enum_iterator(){
+        for i in PlayerActions::iter(){
             if i.to_string() == find{
                 return i;
             }

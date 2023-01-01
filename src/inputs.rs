@@ -13,36 +13,55 @@ pub mod keyboard_input_data;
 use player_actions::PlayerActions;
 
 
-//todo implement panning
 //todo make this not shit
 //
 //
 //public interfaces
-//update keybindings
 //handle KeyboardInputActions
 //there are orphan functions in this file. do something about them
 
-//all actions the player can do
 
+//all actions the player can do
+//split input handle and update into different files
 
 
 
 //this can be fixed if we can implement fmt display to keycode
 //or some other way to turn this enum to a string or char
-fn get_enum_from_char(find:char)->KeyCode{
+fn get_enum_from_str(find:&str)->KeyCode{
     match find {
-        'K'=>KeyCode::K,
-        'J'=>KeyCode::J,
-        'L'=>KeyCode::L,
-        'H'=>KeyCode::H,
-        'W'=>KeyCode::W,
-        'A'=>KeyCode::A,
-        'S'=>KeyCode::S,
-        'D'=>KeyCode::D,
+        "K"=>KeyCode::K,
+        "J"=>KeyCode::J,
+        "L"=>KeyCode::L,
+        "H"=>KeyCode::H,
+        "W"=>KeyCode::W,
+        "A"=>KeyCode::A,
+        "S"=>KeyCode::S,
+        "D"=>KeyCode::D,
+        "Up"=>KeyCode::Up,
+        "Down"=>KeyCode::Down,
+        "Left"=>KeyCode::Left,
+        "Right"=>KeyCode::Right,
         _=>panic!("no key: {} implemented",find),
         
     }
 }
+
+
+
+fn get_keycode_from_line<'a>(line:&'a String)->KeyCode{
+    let mut enumstring:&str="notfound";
+    for (ind,charac) in line.as_bytes().into_iter().enumerate(){
+        if charac.clone() as char==':'{
+            //from 0 to :
+            enumstring = &line[0..ind];
+            break;
+        }
+    }
+    get_enum_from_str(enumstring)
+
+}
+
 
 
 //line should looke like this K:MakeFactory;
@@ -102,12 +121,13 @@ pub fn update_key_bindings()->HashMap<KeyCode,PlayerActions>{
             Ok(line)=>line,
             Err(error)=>panic!("{}",error),
         };
-
         //line should looke like this K:MakeFactory;
+
         //get PlayerActions enum varian from the line
         let enumstring=get_playeraction_from_line(&line);
 
-        let key=get_enum_from_char(line.chars().nth(0).unwrap());
+        //get keycode from line function same as the upper one but other
+        let key=get_keycode_from_line(&line);
         returnmap.insert(key, PlayerActions::get_enum_from_string(enumstring));
         //println!("key:{} val:{}",line.chars().nth(0).unwrap(),enumstring);
     };
