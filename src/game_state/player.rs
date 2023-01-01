@@ -11,6 +11,7 @@ impl Player {
         }
     }
 
+    #[allow(dead_code)]
     pub fn set_cords(&mut self, new_cords: &Cordinates) {
         self.cords.x = new_cords.x;
         self.cords.y = new_cords.y;

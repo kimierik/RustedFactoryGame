@@ -13,7 +13,7 @@ pub struct InputData{
 impl InputData{
     pub fn new()->Self{
         InputData{
-            key_map:super::update_key_bindings(),
+            key_map:super::keybind_setup::update_key_bindings(),
             handled_keys: vec![],
         }
     }

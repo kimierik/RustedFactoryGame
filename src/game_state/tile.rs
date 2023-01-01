@@ -32,8 +32,8 @@ impl Tile {
         let p = ggez::graphics::Rect::new(
             world_cords.x,
             world_cords.y,
-            screen.tile_size,
-            screen.tile_size,
+            screen.get_tile_size(),
+            screen.get_tile_size(),
         );
         let mesh = graphics::Mesh::new_rectangle(ctx, graphics::DrawMode::fill(), p, color);
         mesh
@@ -44,11 +44,7 @@ impl Tile {
     }
 
     pub fn apply_effect(&self, resouce_pool: &mut GameResources) {
-        match &self.state {
-            State::FactoryBlock => resouce_pool.add_money(1),//magic number, this factory
-            //productiviry
-            State::DefaultBlock => resouce_pool.add_multiplier(),
-        }
+       resouce_pool.add_resource(self.get_state().get_building_info()) 
     }
 
     pub fn get_state(&self)->&State{

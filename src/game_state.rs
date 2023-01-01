@@ -6,53 +6,24 @@ pub mod tile;
 pub mod game_resources;
 pub mod player;
 pub mod tile_state;
+pub mod screen_info;
 
 use cordinate::Cordinates;
 use game_resources::GameResources;
 use player::Player;
 use tile::Tile;
+use screen_info::ScreenInfo;
 
 use crate::inputs::player_actions::PlayerActions;
 use crate::inputs;
 
 
-//houses tilesize and camera pan offset, zoom etc
-//move to own file 
-pub struct ScreenInfo {
-    tile_size: f32,
-    pan_offset:Cordinates,
-}
-
-impl ScreenInfo{
-    pub fn new()->Self{
-        ScreenInfo { 
-            tile_size: 20.0, 
-            pan_offset: Cordinates::from(0.0, 0.0)
-        }
-    }
-    pub fn get_tile_size(&self)->f32{
-        self.tile_size
-    }
-
-    pub fn get_pan(&self)->&Cordinates{
-        &self.pan_offset
-    }
-
-    pub fn offset_pan(&mut self,cords:Cordinates){
-        self.pan_offset=self.pan_offset+cords;
-    }
-
-    pub fn set_pan(&mut self,cords:Cordinates){
-        self.pan_offset=cords;
-    }
-
-}
 
 
 pub struct MainState {
     map: Vec<Tile>,
     player: Player,
-    screendata: ScreenInfo,
+    screendata: screen_info::ScreenInfo,
     resources: GameResources,
     //keeps time between resource collections
     time_since_last_collection_cycle: Instant,
@@ -65,7 +36,7 @@ impl MainState {
         MainState {
             map: vec![],
             player: Player::new(),
-            screendata: ScreenInfo::new(), 
+            screendata: screen_info::ScreenInfo::new(), 
             resources: GameResources::make_instance(),
             time_since_last_collection_cycle: Instant::now(),
 
@@ -146,6 +117,8 @@ impl MainState {
         txt
     }
 
+   //gettes so we can have private fields
+    
     pub fn get_time_since_collect(&self) -> &Instant {
         &self.time_since_last_collection_cycle
     }

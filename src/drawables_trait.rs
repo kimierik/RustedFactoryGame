@@ -2,7 +2,7 @@ use ggez::{self, graphics::Canvas};
 use ggez::graphics;
 
 use crate::GAME_SCREENW;
-use crate::game_state::ScreenInfo;
+use crate::game_state::screen_info::ScreenInfo;
 
 //ugly draw ui function that is not in main
 pub fn draw_ui_bg(canvas:&mut Canvas, ctx:&mut ggez::Context)->ggez::GameResult{
