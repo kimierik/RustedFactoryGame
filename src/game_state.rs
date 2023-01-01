@@ -64,11 +64,39 @@ impl MainState {
                 ))
             }
         }
+    }
 
+    pub fn check_and_remove_tile(&mut self){
+        if self.player_is_on_tile(){
+            //should always return a tile
+            let data=self.get_tile_on_player().unwrap();
+            let tile_cost= data.0.get_state().get_cost_for_tile();
+            self.map.remove(data.1);
+            self.resources.add_money(tile_cost);
+        }
     }
 
     pub fn get_player_ref(&self) -> &Player {
         &self.player
+    }
+
+    fn player_is_on_tile(&self) -> bool {
+        for tile in self.map.iter() {
+            if tile.is_here(self.player.get_cords()) {
+                return true;
+            }
+        }
+        false
+    }
+
+    //gets the tile that the player is standing on
+    fn get_tile_on_player(&self)->Option<(&Tile,usize)>{
+        for (index,tile) in self.map.iter().enumerate() {
+            if tile.is_here(self.player.get_cords()) {
+                return Some((tile,index));
+            }
+        }
+        None
     }
 
     //loop and apply things
@@ -117,12 +145,4 @@ impl MainState {
         self.time_since_last_collection_cycle = Instant::now();
     }
 
-    fn player_is_on_tile(&self) -> bool {
-        for tile in self.map.iter() {
-            if tile.is_here(self.player.get_cords()) {
-                return true;
-            }
-        }
-        false
-    }
 }

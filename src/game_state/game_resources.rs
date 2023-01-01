@@ -29,8 +29,8 @@ impl GameResources {
         self.temp_money_multiplier = 1.0;
     }
 
-    pub fn add_money(&mut self) {
-        self.temp_money += 1;
+    pub fn add_money(&mut self,value:i32) {
+        self.temp_money += value;
     }
 
     pub fn subtract_money(&mut self ,value:i32){

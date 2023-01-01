@@ -45,6 +45,22 @@ fn get_enum_from_char(find:char)->KeyCode{
 }
 
 
+//line should looke like this K:MakeFactory;
+//match string[0] with a string version of keycode enum
+//do same with our enum
+//PlayerActions enum as a string
+fn get_playeraction_from_line<'a>(line:&'a String)->&'a str{
+    let mut enumstring:&str="NoAction";
+    for (ind,charac) in line.as_bytes().into_iter().enumerate(){
+        if charac.clone() as char==':'{
+            //where the enum starts index of charac
+            //we know when it ensd
+            enumstring = &line[ind+1..line.len()-1];
+            break;
+        }
+    }
+    enumstring
+}
 
 
 
@@ -88,24 +104,8 @@ pub fn update_key_bindings()->HashMap<KeyCode,PlayerActions>{
         };
 
         //line should looke like this K:MakeFactory;
-        //match string[0] with a string version of keycode enum
-        //do same with our enum
-        //PlayerActions enum as a string
-        let mut enumstring:&str="NoAction";
-
-        //this can be moved to a function to make it cleaner
-        for (ind,charac) in line.as_bytes().into_iter().enumerate(){
-            if charac.clone() as char==':'{
-                //where the enum starts index of charac
-                //we know when it ensd
-                enumstring = &line[ind+1..line.len()-1];
-                break;
-            }
-        }
-
-        //get the proper enum
-        //find where the string is represented in the line
-        //match it to the one in the enum
+        //get PlayerActions enum varian from the line
+        let enumstring=get_playeraction_from_line(&line);
 
         let key=get_enum_from_char(line.chars().nth(0).unwrap());
         returnmap.insert(key, PlayerActions::get_enum_from_string(enumstring));
@@ -151,7 +151,6 @@ pub fn handle_keyboard_inputs(game: &mut MainState, ctx: &mut ggez::Context) {
         for key in currently_pressed_keys{
             if handled_key==key{
                 is_in_pressed=true;
-                //is in dont do anything
             }
         }
         if !is_in_pressed{
@@ -160,6 +159,7 @@ pub fn handle_keyboard_inputs(game: &mut MainState, ctx: &mut ggez::Context) {
     }
 
     //seacond loop so that the first mut ref of game goes out of scope
+    //remove keys from handled_keys
     for i in keys_to_remove_from_handled.iter(){
         game.get_mut_input_data().handled_keys.retain(|value| *value != i.clone());
     }

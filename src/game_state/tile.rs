@@ -45,8 +45,13 @@ impl Tile {
 
     pub fn apply_effect(&self, resouce_pool: &mut GameResources) {
         match &self.state {
-            State::FactoryBlock => resouce_pool.add_money(),
+            State::FactoryBlock => resouce_pool.add_money(1),//magic number, this factory
+            //productiviry
             State::DefaultBlock => resouce_pool.add_multiplier(),
         }
+    }
+
+    pub fn get_state(&self)->&State{
+        &self.state
     }
 }
