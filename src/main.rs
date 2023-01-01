@@ -1,21 +1,22 @@
-use std::time::Duration;
 use ggez::event::EventHandler;
 use ggez::graphics::{self, Canvas, Color};
+use strum::IntoEnumIterator;
+use std::time::Duration;
 
+mod drawables_trait;
 mod game_state;
 mod inputs;
-mod drawables_trait;
 //cordinate and input does not need to be in game state
 //lets do propper implementation
 
-use game_state::MainState;
 use drawables_trait::MakeDrawable;
+use game_state::MainState;
 
 const GAME_SCREENW: f32 = 600.0;
 const GAME_SCREENY: f32 = 600.0;
 const UIX: f32 = 300.0;
 const UIY: f32 = 300.0;
-const KEYBIND_FILENAME:&str="KeyboardInputActions.cfg" ;
+const KEYBIND_FILENAME: &str = "KeyboardInputActions.cfg";
 
 impl EventHandler<ggez::GameError> for game_state::MainState {
     fn update(&mut self, ctx: &mut ggez::Context) -> ggez::GameResult {
@@ -39,7 +40,8 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
         self.draw_object(&mut canvas, ctx, self.get_screen_info())?;
 
         //draw player
-        self.get_player_ref().draw_object(&mut canvas, ctx, self.get_screen_info())?;
+        self.get_player_ref()
+            .draw_object(&mut canvas, ctx, self.get_screen_info())?;
 
         //draw the bg for the ui
         drawables_trait::draw_ui_bg(&mut canvas, ctx)?;
@@ -50,13 +52,20 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
             graphics::DrawParam::default().dest([GAME_SCREENW, 10.0]),
         );
 
+        //loop through all states and make the thing
+        //remove magic numbers
+        for (index,state) in game_state::tile_state::State::iter().enumerate(){
+            drawables_trait::make_rect(game_state::cordinate::Cordinates { x: index as f32 * 300.0, y: GAME_SCREENY + UIY/3.0}, 300.0, 200.0, state.get_color(), ctx, &mut canvas)?;
+            canvas.draw(
+                &state.get_building_drawable(),
+                graphics::DrawParam::default().dest([300.0*index as f32 , GAME_SCREENY + UIY / 2.0]),
+            );
+        }
 
         //vv puts everything we just draw to the ctx
         canvas.finish(ctx)
     }
 }
-
-
 
 fn main() -> ggez::GameResult {
     let (mut ctx, event_loop) = ggez::ContextBuilder::new("gametest", "kimierik")

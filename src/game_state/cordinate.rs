@@ -14,8 +14,11 @@ impl Cordinates {
 
     //figureout how to do this properly
     pub fn world_to_screen(&self, screen: &ScreenInfo) -> Cordinates {
-        let panned_cordinates=self-screen.get_pan();
-        Cordinates::from(panned_cordinates.x * screen.get_tile_size(), panned_cordinates.y * screen.get_tile_size())
+        let panned_cordinates = self - screen.get_pan();
+        Cordinates::from(
+            panned_cordinates.x * screen.get_tile_size(),
+            panned_cordinates.y * screen.get_tile_size(),
+        )
     }
 
     //compare 2 Cordinates and see if they are the same
@@ -24,30 +27,33 @@ impl Cordinates {
     }
 }
 
-
-
-
-
 //QOL implementations
-impl std::ops::Add<Cordinates> for Cordinates{
+impl std::ops::Add<Cordinates> for Cordinates {
     type Output = Cordinates;
-    fn add(self,addable:Cordinates)->Cordinates{
-        Cordinates { x: self.x+addable.x, y: self.y+addable.y }
+    fn add(self, addable: Cordinates) -> Cordinates {
+        Cordinates {
+            x: self.x + addable.x,
+            y: self.y + addable.y,
+        }
     }
 }
 
-impl std::ops::Add<&Cordinates> for &Cordinates{
+impl std::ops::Add<&Cordinates> for &Cordinates {
     type Output = Cordinates;
-    fn add(self,addable:&Cordinates)->Cordinates{
-        Cordinates { x: self.x+addable.x, y: self.y+addable.y }
+    fn add(self, addable: &Cordinates) -> Cordinates {
+        Cordinates {
+            x: self.x + addable.x,
+            y: self.y + addable.y,
+        }
     }
 }
 
-impl std::ops::Sub<&Cordinates> for &Cordinates{
+impl std::ops::Sub<&Cordinates> for &Cordinates {
     type Output = Cordinates;
-    fn sub(self,addable:&Cordinates)->Cordinates{
-        Cordinates { x: self.x-addable.x, y: self.y-addable.y }
+    fn sub(self, addable: &Cordinates) -> Cordinates {
+        Cordinates {
+            x: self.x - addable.x,
+            y: self.y - addable.y,
+        }
     }
 }
-
-

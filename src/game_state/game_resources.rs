@@ -1,5 +1,4 @@
-
-use super::tile_state::{Building,Material};
+use super::tile_state::{Building, Material};
 
 pub struct GameResources {
     temp_money: i32,
@@ -31,27 +30,26 @@ impl GameResources {
         self.temp_money_multiplier = 1.0;
     }
 
-    pub fn add_resource(&mut self,building_info:Building){
+    pub fn add_resource(&mut self, building_info: Building) {
         match building_info.created_material {
-            Material::Money=>self.add_money(building_info.produced_amount as i32),
-            Material::MoneyMultiplier=>self.add_multiplier(building_info.produced_amount),
+            Material::Money => self.add_money(building_info.produced_amount as i32),
+            Material::MoneyMultiplier => self.add_multiplier(building_info.produced_amount),
         }
     }
 
-
-    pub fn add_money(&mut self,value:i32) {
+    pub fn add_money(&mut self, value: i32) {
         self.temp_money += value;
     }
 
-    pub fn subtract_money(&mut self ,value:i32){
-        self.total_money-=value;
+    pub fn subtract_money(&mut self, value: i32) {
+        self.total_money -= value;
     }
 
-    pub fn add_multiplier(&mut self,val:f32) {
+    pub fn add_multiplier(&mut self, val: f32) {
         self.temp_money_multiplier += val;
     }
 
-    pub fn get_money(&self)->&i32{
+    pub fn get_money(&self) -> &i32 {
         &self.total_money
     }
 

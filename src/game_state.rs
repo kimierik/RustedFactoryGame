@@ -1,24 +1,21 @@
-use std::{time::Instant, vec, collections::HashMap};
 use ggez::graphics;
+use std::{collections::HashMap, time::Instant, vec};
 
 pub mod cordinate;
-pub mod tile;
 pub mod game_resources;
 pub mod player;
-pub mod tile_state;
 pub mod screen_info;
+pub mod tile;
+pub mod tile_state;
 
 use cordinate::Cordinates;
 use game_resources::GameResources;
 use player::Player;
-use tile::Tile;
 use screen_info::ScreenInfo;
+use tile::Tile;
 
-use crate::inputs::player_actions::PlayerActions;
 use crate::inputs;
-
-
-
+use crate::inputs::player_actions::PlayerActions;
 
 pub struct MainState {
     map: Vec<Tile>,
@@ -28,7 +25,7 @@ pub struct MainState {
     //keeps time between resource collections
     time_since_last_collection_cycle: Instant,
     //keyboard related data, keymap and input handling related data
-    input_data:inputs::keyboard_input_data::InputData,
+    input_data: inputs::keyboard_input_data::InputData,
 }
 
 impl MainState {
@@ -36,11 +33,11 @@ impl MainState {
         MainState {
             map: vec![],
             player: Player::new(),
-            screendata: screen_info::ScreenInfo::new(), 
+            screendata: screen_info::ScreenInfo::new(),
             resources: GameResources::make_instance(),
             time_since_last_collection_cycle: Instant::now(),
 
-            input_data:inputs::keyboard_input_data::InputData::new(),
+            input_data: inputs::keyboard_input_data::InputData::new(),
         }
     }
 
@@ -52,9 +49,8 @@ impl MainState {
         self.player.add_cords(&Cordinates::from(0.0, y));
     }
 
-
     pub fn check_and_place_tile(&mut self, state: tile_state::State) {
-        if self.resources.get_money() >= &state.get_cost_for_tile(){
+        if self.resources.get_money() >= &state.get_cost_for_tile() {
             if !self.player_is_on_tile() {
                 self.resources.subtract_money(state.get_cost_for_tile());
                 self.map.push(Tile::create_tile_with(
@@ -65,11 +61,11 @@ impl MainState {
         }
     }
 
-    pub fn check_and_remove_tile(&mut self){
-        if self.player_is_on_tile(){
+    pub fn check_and_remove_tile(&mut self) {
+        if self.player_is_on_tile() {
             //should always return a tile
-            let data=self.get_tile_on_player().unwrap();
-            let tile_cost= data.0.get_state().get_cost_for_tile();
+            let data = self.get_tile_on_player().unwrap();
+            let tile_cost = data.0.get_state().get_cost_for_tile();
             self.map.remove(data.1);
             self.resources.add_money(tile_cost);
         }
@@ -89,10 +85,10 @@ impl MainState {
     }
 
     //gets the tile that the player is standing on
-    fn get_tile_on_player(&self)->Option<(&Tile,usize)>{
-        for (index,tile) in self.map.iter().enumerate() {
+    fn get_tile_on_player(&self) -> Option<(&Tile, usize)> {
+        for (index, tile) in self.map.iter().enumerate() {
             if tile.is_here(self.player.get_cords()) {
-                return Some((tile,index));
+                return Some((tile, index));
             }
         }
         None
@@ -117,8 +113,8 @@ impl MainState {
         txt
     }
 
-   //gettes so we can have private fields
-    
+    //gettes so we can have private fields
+
     pub fn get_time_since_collect(&self) -> &Instant {
         &self.time_since_last_collection_cycle
     }
@@ -131,23 +127,22 @@ impl MainState {
         &mut self.screendata
     }
 
-    pub fn get_map(&self)->&Vec<Tile>{
+    pub fn get_map(&self) -> &Vec<Tile> {
         &self.map
     }
 
-    pub fn get_key_map(&self)->&HashMap<ggez::input::keyboard::KeyCode,PlayerActions>{
+    pub fn get_key_map(&self) -> &HashMap<ggez::input::keyboard::KeyCode, PlayerActions> {
         &self.input_data.key_map
     }
-    pub fn get_input_data(&self)->&inputs::keyboard_input_data::InputData{
+    pub fn get_input_data(&self) -> &inputs::keyboard_input_data::InputData {
         &self.input_data
     }
 
-    pub fn get_mut_input_data(&mut self)->&mut inputs::keyboard_input_data::InputData{
+    pub fn get_mut_input_data(&mut self) -> &mut inputs::keyboard_input_data::InputData {
         &mut self.input_data
     }
 
     pub fn reset_time_since_collect(&mut self) {
         self.time_since_last_collection_cycle = Instant::now();
     }
-
 }

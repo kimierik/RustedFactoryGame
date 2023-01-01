@@ -1,11 +1,10 @@
+use super::tile_state::State;
 use super::Cordinates;
 use super::GameResources;
 use super::ScreenInfo;
-use super::tile_state::State;
 use ggez::graphics;
 
 //move state away to another file
-
 
 pub struct Tile {
     cords: Cordinates,
@@ -19,7 +18,6 @@ impl Tile {
             state: machine,
         }
     }
-
 
     //todo implement world to screen cordinates
     pub fn get_drawable(
@@ -44,10 +42,10 @@ impl Tile {
     }
 
     pub fn apply_effect(&self, resouce_pool: &mut GameResources) {
-       resouce_pool.add_resource(self.get_state().get_building_info()) 
+        resouce_pool.add_resource(self.get_state().get_building_info())
     }
 
-    pub fn get_state(&self)->&State{
+    pub fn get_state(&self) -> &State {
         &self.state
     }
 }
