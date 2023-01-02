@@ -13,3 +13,10 @@ remappable key system
 infinite grid system that lets the grid pieces interract with each other  
 saving and loading data  
 
+## dependancies    
+ggez="0.8.1"  
+strum = "0.24"  
+strum_macros = "0.24"  
+
+
+

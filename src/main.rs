@@ -6,11 +6,14 @@ use std::time::Duration;
 mod drawables_trait;
 mod game_state;
 mod inputs;
+mod serialisation;
 //cordinate and input does not need to be in game state
 //lets do propper implementation
 
 use drawables_trait::MakeDrawable;
 use game_state::MainState;
+
+use crate::serialisation::GameOptions;
 
 const GAME_SCREENW: f32 = 600.0;
 const GAME_SCREENY: f32 = 600.0;
@@ -68,6 +71,26 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 }
 
 fn main() -> ggez::GameResult {
+    let mut user_game_save_choise=String::new();
+    println!("1: New Game \n2: Load Game");
+
+    std::io::stdin().read_line(&mut user_game_save_choise).expect("failed line read");
+
+    let user_game_save_choise:u32=match user_game_save_choise.trim().parse() {
+        Ok(num)=>num,
+        Err(_)=>panic!("incorrect input"),
+    };
+
+    //TODO
+    //make possible to retry input
+    //make possible to give save and load filenames 
+    let choise=match user_game_save_choise {
+        1=>serialisation::GameOptions::NewGame,
+        2=>serialisation::GameOptions::LoadGame("test_save.json".to_string()),
+        _=>panic!("{} is incorrect input",user_game_save_choise),
+    };
+
+
     let (mut ctx, event_loop) = ggez::ContextBuilder::new("gametest", "kimierik")
         .window_mode(
             ggez::conf::WindowMode::default().dimensions(GAME_SCREENW + UIX, GAME_SCREENY + UIY),
@@ -75,6 +98,13 @@ fn main() -> ggez::GameResult {
         .build()
         .expect("cb ERROR");
 
-    let state = MainState::new(&mut ctx);
+    let state=match choise {
+        GameOptions::NewGame=>MainState::new(),
+        GameOptions::LoadGame(filename)=>serialisation::load_game(&filename),
+        
+    };
+
+
+
     ggez::event::run(ctx, event_loop, state)
 }

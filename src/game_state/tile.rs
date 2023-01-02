@@ -3,6 +3,7 @@ use super::Cordinates;
 use super::GameResources;
 use super::ScreenInfo;
 use ggez::graphics;
+use json::array;
 
 //move state away to another file
 
@@ -48,4 +49,10 @@ impl Tile {
     pub fn get_state(&self) -> &State {
         &self.state
     }
+
+    pub fn get_as_serialisable(&self)->json::JsonValue{
+        array![self.cords.x,self.cords.y,self.state.to_string()]
+    }
+
+
 }

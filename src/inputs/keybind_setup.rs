@@ -8,6 +8,8 @@ use std::io::{BufRead, BufReader};
 fn get_enum_from_str(find: &str) -> KeyCode {
     match find {
         "K" => KeyCode::K,
+        "T" => KeyCode::T,
+        "Y" => KeyCode::Y,
         "J" => KeyCode::J,
         "L" => KeyCode::L,
         "H" => KeyCode::H,

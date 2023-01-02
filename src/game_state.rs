@@ -29,7 +29,7 @@ pub struct MainState {
 }
 
 impl MainState {
-    pub fn new(_ctx: &mut ggez::Context) -> Self {
+    pub fn new() -> Self {
         MainState {
             map: vec![],
             player: Player::new(),
@@ -40,6 +40,18 @@ impl MainState {
             input_data: inputs::keyboard_input_data::InputData::new(),
         }
     }
+
+    pub fn new_from_save(mapvec:Vec<Tile>,money:i32)->Self{
+        MainState { 
+        map: mapvec,
+        player: Player::new(), 
+        screendata: screen_info::ScreenInfo::new(), 
+        resources: GameResources::make_instance_with_money(money), 
+        time_since_last_collection_cycle:Instant::now(), 
+        input_data: inputs::keyboard_input_data::InputData::new(),
+        }
+    }
+
 
     pub fn change_player_location_x(&mut self, x: f32) {
         self.player.add_cords(&Cordinates::from(x, 0.0));
@@ -144,5 +156,9 @@ impl MainState {
 
     pub fn reset_time_since_collect(&mut self) {
         self.time_since_last_collection_cycle = Instant::now();
+    }
+
+    pub fn get_resource(&self)->&GameResources{
+        &self.resources
     }
 }

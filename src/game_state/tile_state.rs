@@ -1,5 +1,6 @@
 use ggez::graphics;
 use strum_macros::EnumIter;
+use strum::IntoEnumIterator;
 
 
 
@@ -66,6 +67,16 @@ impl State {
         Building::make_building(self)
     }
 
+
+    pub fn get_enum_from_string(find: &str) -> Self {
+        for i in State::iter() {
+            if i.to_string() == find {
+                return i;
+            }
+        }
+        panic!("load data parse error. enum name incorrect")
+    }
+
     pub fn get_color(&self) -> ggez::graphics::Color {
         match self {
             State::DefaultBlock => ggez::graphics::Color::BLUE,
@@ -84,6 +95,9 @@ impl State {
         txt
     }
 }
+
+
+
 impl std::fmt::Display for State {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self)
