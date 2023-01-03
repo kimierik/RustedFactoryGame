@@ -144,7 +144,7 @@ impl MainState {
         &self.map
     }
 
-    pub fn get_key_map(&self) -> &HashMap<ggez::input::keyboard::KeyCode, PlayerActions> {
+    pub fn get_key_map(&self) -> &HashMap<String, PlayerActions> {
         &self.input_data.key_map
     }
     pub fn get_input_data(&self) -> &inputs::keyboard_input_data::InputData {

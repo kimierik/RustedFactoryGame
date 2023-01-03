@@ -4,7 +4,8 @@ use std::collections::HashMap;
 
 //make getsetters
 pub struct InputData {
-    pub key_map: HashMap<ggez::input::keyboard::KeyCode, player_actions::PlayerActions>,
+    //change enum keycode to string so we can do stuff better
+    pub key_map: HashMap<String, player_actions::PlayerActions>,
     pub handled_keys: Vec<ggez::input::keyboard::KeyCode>,
 }
 

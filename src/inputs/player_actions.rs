@@ -22,7 +22,7 @@ pub enum PlayerActions {
     NoAction,
 
     SaveGame,
-    LoadGame,
+    DebugKey,
 
 }
 
@@ -59,7 +59,7 @@ impl PlayerActions {
             PlayerActions::NoAction => (),
 
             PlayerActions::SaveGame=>serialisation::save_game(game),
-            PlayerActions::LoadGame=>(),
+            PlayerActions::DebugKey=>println!("debug key pressed"),
 
         }
     }

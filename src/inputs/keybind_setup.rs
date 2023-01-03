@@ -1,44 +1,10 @@
 use super::PlayerActions;
-use ggez::input::keyboard::KeyCode;
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
 
-//TODO fix
-//this can be fixed if we can implement fmt display to keycode
-//or some other way to turn this enum to a string or char
-//can be done with debug {:?},keycode
-//do we still need to loop it them. if so it is hard
-//is there a way to do it without iteration
-//some direct search thing
-//
-//store an enum in the kaycode hashmap
-//enum has either string or the keycode. if we press a key and it is in the string format try to
-//turn it into a keycode before using it
-//or only store a string and always turn it into a keycode when pressed
 
-fn get_enum_from_str(find: &str) -> KeyCode {
-    match find {
-        "K" => KeyCode::K,
-        "T" => KeyCode::T,
-        "Y" => KeyCode::Y,
-        "J" => KeyCode::J,
-        "L" => KeyCode::L,
-        "H" => KeyCode::H,
-        "W" => KeyCode::W,
-        "A" => KeyCode::A,
-        "S" => KeyCode::S,
-        "D" => KeyCode::D,
-        "Up" => KeyCode::Up,
-        "Down" => KeyCode::Down,
-        "Left" => KeyCode::Left,
-        "Right" => KeyCode::Right,
 
-        _ => panic!("key: {} in KeyboardInputActions.cfg is not supported", find),
-        // a key that is in KeyboardInputActions.cfg is not defined here
-    }
-}
-
-fn get_keycode_from_line<'a>(line: &'a String) -> KeyCode {
+fn get_keycode_from_line<'a>(line: &'a String) -> String {
     let mut enumstring: &str = "notfound";
     for (ind, charac) in line.as_bytes().into_iter().enumerate() {
         if charac.clone() as char == ':' {
@@ -47,7 +13,8 @@ fn get_keycode_from_line<'a>(line: &'a String) -> KeyCode {
             break;
         }
     }
-    get_enum_from_str(enumstring)
+    //get_enum_from_str(enumstring)
+    enumstring.to_string()
 }
 
 //line should looke like this K:MakeFactory;
@@ -87,7 +54,7 @@ fn get_playeraction_from_line<'a>(line: &'a String) -> &'a str {
 //we can make a get enum(playeracrion) from line function
 //this removes 7 lines of code
 
-pub fn update_key_bindings() -> HashMap<KeyCode, PlayerActions> {
+pub fn update_key_bindings() -> HashMap<String, PlayerActions> {
     let file_result = std::fs::File::open(crate::KEYBIND_FILENAME);
     let mut returnmap = HashMap::new();
 

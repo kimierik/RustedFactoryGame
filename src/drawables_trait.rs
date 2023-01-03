@@ -4,7 +4,6 @@ use ggez::{self, graphics::Canvas};
 use crate::game_state::screen_info::ScreenInfo;
 use crate::game_state::cordinate::Cordinates;
 use crate::GAME_SCREENW;
-
 //ugly draw ui function that is not in main
 pub fn draw_ui_bg(canvas: &mut Canvas, ctx: &mut ggez::Context) -> ggez::GameResult {
     let game_space = graphics::Rect::new(
