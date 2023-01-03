@@ -6,13 +6,14 @@ pub mod game_resources;
 pub mod player;
 pub mod screen_info;
 pub mod tile;
-pub mod tile_state;
+pub mod buildings;
 
 use cordinate::Cordinates;
 use game_resources::GameResources;
 use player::Player;
 use screen_info::ScreenInfo;
 use tile::Tile;
+use buildings::state::State;
 
 use crate::inputs;
 use crate::inputs::player_actions::PlayerActions;
@@ -61,7 +62,7 @@ impl MainState {
         self.player.add_cords(&Cordinates::from(0.0, y));
     }
 
-    pub fn check_and_place_tile(&mut self, state: tile_state::State) {
+    pub fn check_and_place_tile(&mut self, state: State) {
         if self.resources.get_money() >= &state.get_cost_for_tile() {
             if !self.player_is_on_tile() {
                 self.resources.subtract_money(state.get_cost_for_tile());

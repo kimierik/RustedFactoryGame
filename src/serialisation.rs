@@ -3,7 +3,8 @@ use std::io::{Write, Read};
 
 use json::{object, JsonValue};
 
-use crate::game_state::{MainState, tile_state::State, self, tile::Tile};
+use crate::game_state::{MainState, self, tile::Tile};
+use game_state::buildings::state::State;
 
 pub enum GameOptions{
     NewGame,

@@ -1,4 +1,5 @@
-use super::tile_state::{Building, Material};
+use super::buildings::Building;
+use super::buildings::material::Material;
 
 pub struct GameResources {
     temp_money: i32,
@@ -70,11 +71,6 @@ impl GameResources {
             "money: {} \ncurrent income: {}",
             self.total_money, self.last_collection_income
         )
-    }
-
-    //wip
-    pub fn serialisable_string(&self)->String{
-        format!(":w")
     }
 
 

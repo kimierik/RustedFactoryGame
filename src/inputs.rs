@@ -1,4 +1,4 @@
-use super::game_state::tile_state::State;
+use super::game_state::buildings::state::State;
 use super::MainState;
 use ggez;
 use ggez::input::keyboard::KeyCode;

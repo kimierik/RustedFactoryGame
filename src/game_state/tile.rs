@@ -1,4 +1,4 @@
-use super::tile_state::State;
+use super::buildings::state::State;
 use super::Cordinates;
 use super::GameResources;
 use super::ScreenInfo;
