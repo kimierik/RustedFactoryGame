@@ -3,14 +3,14 @@ use std::io::{Write, Read};
 
 use json::{object, JsonValue};
 
-use crate::game_state::{MainState, tile_state::{self, State}, self, tile::Tile};
+use crate::game_state::{MainState, tile_state::State, self, tile::Tile};
 
 pub enum GameOptions{
     NewGame,
     LoadGame(String),
 }
 
-
+//make not panic on failsave
 pub fn save_game(game:&MainState){
 
     let mut mapthing:Vec<JsonValue>=vec![];
@@ -48,40 +48,62 @@ pub fn save_game(game:&MainState){
 }
 
 
-//reads file and makes 
-pub fn load_game(filename:&str)->MainState{
-    //TODO
-    //make better error messeges
-    //remove unwraps
-    let mut file =std::fs::File::open(filename).unwrap();
-    let mut s:String=String::new();
-    file.read_to_string(&mut s).unwrap();
-    let b=json::parse(&s).unwrap();
-    let saved_money=&b["Resources"]["Money"];
-    let saved_map=&b["Map"];
-    //println!("{}",saved_money);
-    //println!("{}",saved_map);
+//reads file and makes a mainstate instanse from the files data
+pub fn load_game(filename:&str)->Option<MainState> {
 
+    let mut file =match std::fs::File::open(filename){
+        Ok(file)=>file,
+        Err(err)=>{println!("file open error: {}",err);return None},
+    };
+    let mut s:String=String::new();
+
+    match file.read_to_string(&mut s)  {
+        Ok(a)=>a,
+        Err(err)=>{println!("error reading from file {}",err);return None},
+    } ;
+
+    let json_data:JsonValue=match json::parse(&s) {
+        Ok(data)=>data,
+        Err(err)=>{println!("failed to parse json data: {}",err);return None},
+    }; 
+
+    let saved_money=match json_data["Resources"]["Money"].as_i32() {
+        Some(number)=>number,
+        None=>{println!("error converting money ");return None},
+    }; 
+
+
+    let saved_map=&json_data["Map"];
     let mut tilevec:Vec<Tile>=vec![];
+
     for i in 0..saved_map.len(){
-        //println!("{}",saved_map[i]);
-        //this is [16,9,"FactoryBlock"]  someway to parse this propper
-        //just use indexes as parameters
-        //
-        let savedx:f32=saved_map[i][0].as_f32().unwrap();
-        let savedy:f32=saved_map[i][1].as_f32().unwrap();
+        //this should be [16,9,"FactoryBlock"]  
+
+        let savedx:f32=match saved_map[i][0].as_f32(){
+            Some(num)=>num,
+            None=>{println!("Load failed: tile cordinate x:{} cannot be converted to num",saved_map[i][0]);return None},
+        }; 
+
+        let savedy:f32=match saved_map[i][1].as_f32(){
+            Some(num)=>num,
+            None=>{println!("Load failed: tile cordinate y:{} cannot be converted to num",saved_map[i][1]);return None},
+        }; 
+
         tilevec.push(Tile::create_tile_with(game_state::cordinate::Cordinates 
                 { 
                     x: savedx, 
                     y: savedy 
                 },
-                State::get_enum_from_string(&saved_map[i][2].as_str().unwrap()) ))
+                State::get_enum_from_string(
+                    match saved_map[i][2].as_str() {
+                        Some(ok)=>&ok,
+                        None=>{println!("error converting tile state to a building");return None},
+                    } )
+                ))
     }
-    
 
 
-
-    MainState::new_from_save(tilevec,saved_money.as_i32().unwrap())
+    Some(MainState::new_from_save(tilevec,saved_money))
 }
 
 

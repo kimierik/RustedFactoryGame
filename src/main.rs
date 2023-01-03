@@ -70,6 +70,8 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
     }
 }
 
+//TODO
+//make not panic on fail input
 fn main() -> ggez::GameResult {
     let mut user_game_save_choise=String::new();
     println!("1: New Game \n2: Load Game");
@@ -80,6 +82,7 @@ fn main() -> ggez::GameResult {
         Ok(num)=>num,
         Err(_)=>panic!("incorrect input"),
     };
+
 
     //TODO
     //make possible to retry input
@@ -100,10 +103,9 @@ fn main() -> ggez::GameResult {
 
     let state=match choise {
         GameOptions::NewGame=>MainState::new(),
-        GameOptions::LoadGame(filename)=>serialisation::load_game(&filename),
-        
+        GameOptions::LoadGame(filename)=>serialisation::load_game(&filename).unwrap(),
+        //TODO make a better error handle here when we make a loop thing for main menu thing
     };
-
 
 
     ggez::event::run(ctx, event_loop, state)

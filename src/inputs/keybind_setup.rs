@@ -3,8 +3,19 @@ use ggez::input::keyboard::KeyCode;
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
 
+//TODO fix
 //this can be fixed if we can implement fmt display to keycode
 //or some other way to turn this enum to a string or char
+//can be done with debug {:?},keycode
+//do we still need to loop it them. if so it is hard
+//is there a way to do it without iteration
+//some direct search thing
+//
+//store an enum in the kaycode hashmap
+//enum has either string or the keycode. if we press a key and it is in the string format try to
+//turn it into a keycode before using it
+//or only store a string and always turn it into a keycode when pressed
+
 fn get_enum_from_str(find: &str) -> KeyCode {
     match find {
         "K" => KeyCode::K,
