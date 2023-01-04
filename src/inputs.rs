@@ -18,17 +18,16 @@ use player_actions::PlayerActions;
 
 //finds key from the hash keybindings and activates its effect if there is one
 fn activate_key(key: &KeyCode, game: &mut MainState) {
-    let action = game.get_key_map().get(&format!("{:?}",key));
+    let action = game.get_key_map().get(&format!("{:?}", key));
     match action {
         Some(action) => action.apply_effect(game),
         None => (), //no key found in keymap
     }
 }
 
-
 //finds key from the hash keybindings and activates its effect if there is one. this time with mods
-fn activate_key_with_mods(key:&KeyCode,game:&mut MainState, mods:KeyMods){
-    let fullstring=format!("{:?}+{:?}",mods,key);
+fn activate_key_with_mods(key: &KeyCode, game: &mut MainState, mods: KeyMods) {
+    let fullstring = format!("{:?}+{:?}", mods, key);
     let action = game.get_key_map().get(&fullstring);
     match action {
         Some(action) => action.apply_effect(game),
@@ -36,22 +35,21 @@ fn activate_key_with_mods(key:&KeyCode,game:&mut MainState, mods:KeyMods){
     }
 }
 
-
 //loops all keys and activates its effect if it exists
 pub fn handle_keyboard_inputs(game: &mut MainState, ctx: &mut ggez::Context) {
     let currently_pressed_keys = ctx.keyboard.pressed_keys();
     //loop through all currently pressed keys and see if we have allready handled them
-    let activemods=ctx.keyboard.active_mods();
+    let activemods = ctx.keyboard.active_mods();
     //if we are going to activate but we have some active mod use another bunction to see the ting
 
     //very nested
     for key in currently_pressed_keys {
         if !game.get_input_data().is_key_handled(key) {
             //if mods use them
-            if activemods.is_empty(){
+            if activemods.is_empty() {
                 activate_key(key, game);
                 game.get_mut_input_data().handled_keys.push(key.clone());
-            }else{
+            } else {
                 activate_key_with_mods(key, game, activemods);
                 game.get_mut_input_data().handled_keys.push(key.clone());
             }

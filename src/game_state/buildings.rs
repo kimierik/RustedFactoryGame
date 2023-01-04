@@ -1,10 +1,8 @@
-
 pub mod material;
 pub mod state;
 
 use material::Material;
 use state::State;
-
 
 //make getters
 pub struct Building {
@@ -34,10 +32,10 @@ impl Building {
         }
     }
 
-    pub fn to_string(&self,is:&State) -> String {
+    pub fn to_string(&self, is: &State) -> String {
         format!(
             "          {} \nCost: {} \nAdds: {} to {}",
-            is,self.cost, self.produced_amount, self.created_material
+            is, self.cost, self.produced_amount, self.created_material
         )
     }
 }

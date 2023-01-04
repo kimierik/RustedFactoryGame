@@ -1,8 +1,8 @@
 use ggez::graphics;
 use ggez::{self, graphics::Canvas};
 
-use crate::game_state::screen_info::ScreenInfo;
 use crate::game_state::cordinate::Cordinates;
+use crate::game_state::screen_info::ScreenInfo;
 use crate::GAME_SCREENW;
 //ugly draw ui function that is not in main
 pub fn draw_ui_bg(canvas: &mut Canvas, ctx: &mut ggez::Context) -> ggez::GameResult {
@@ -32,25 +32,22 @@ pub fn draw_ui_bg(canvas: &mut Canvas, ctx: &mut ggez::Context) -> ggez::GameRes
     Ok(())
 }
 
+pub fn make_rect(
+    location: Cordinates,
+    w: f32,
+    h: f32,
+    col: graphics::Color,
+    ctx: &mut ggez::Context,
+    canvas: &mut Canvas,
+) -> ggez::GameResult {
+    let game_space_b = graphics::Rect::new(location.x, location.y, w, h);
 
-
-pub fn make_rect(location:Cordinates,w:f32,h:f32,col:graphics::Color,ctx: &mut ggez::Context,canvas: &mut Canvas)->ggez::GameResult{
-    let game_space_b =
-        graphics::Rect::new(location.x, location.y, w, h);
-
-    let game_space_mesh_b = graphics::Mesh::new_rectangle(
-        ctx,
-        graphics::DrawMode::fill(),
-        game_space_b,
-        col,
-    )?;
+    let game_space_mesh_b =
+        graphics::Mesh::new_rectangle(ctx, graphics::DrawMode::fill(), game_space_b, col)?;
     canvas.draw(&game_space_mesh_b, graphics::DrawParam::default());
 
     Ok(())
 }
-
-
-
 
 //wanted to try traits
 pub trait MakeDrawable {

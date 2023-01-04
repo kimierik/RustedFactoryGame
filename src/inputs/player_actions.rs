@@ -23,7 +23,6 @@ pub enum PlayerActions {
 
     SaveGame,
     DebugKey,
-
 }
 
 impl std::fmt::Display for PlayerActions {
@@ -58,9 +57,8 @@ impl PlayerActions {
             PlayerActions::MakeDefault => game.check_and_place_tile(State::DefaultBlock),
             PlayerActions::NoAction => (),
 
-            PlayerActions::SaveGame=>serialisation::save_game(game),
-            PlayerActions::DebugKey=>println!("debug key pressed"),
-
+            PlayerActions::SaveGame => serialisation::save_game(game),
+            PlayerActions::DebugKey => println!("debug key pressed"),
         }
     }
 

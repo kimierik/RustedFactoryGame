@@ -50,9 +50,7 @@ impl Tile {
         &self.state
     }
 
-    pub fn get_as_serialisable(&self)->json::JsonValue{
-        array![self.cords.x,self.cords.y,self.state.to_string()]
+    pub fn get_as_serialisable(&self) -> json::JsonValue {
+        array![self.cords.x, self.cords.y, self.state.to_string()]
     }
-
-
 }

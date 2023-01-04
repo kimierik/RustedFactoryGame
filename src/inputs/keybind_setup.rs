@@ -2,8 +2,6 @@ use super::PlayerActions;
 use std::collections::HashMap;
 use std::io::{BufRead, BufReader};
 
-
-
 fn get_keycode_from_line<'a>(line: &'a String) -> String {
     let mut enumstring: &str = "notfound";
     for (ind, charac) in line.as_bytes().into_iter().enumerate() {

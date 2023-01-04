@@ -11,8 +11,8 @@ mod serialisation;
 //lets do propper implementation
 
 use drawables_trait::MakeDrawable;
-use game_state::MainState;
 use game_state::buildings::state::State;
+use game_state::MainState;
 
 use crate::serialisation::GameOptions;
 
@@ -58,11 +58,22 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 
         //loop through all states and make the thing
         //remove magic numbers
-        for (index,state) in State::iter().enumerate(){
-            drawables_trait::make_rect(game_state::cordinate::Cordinates { x: index as f32 * 300.0, y: GAME_SCREENY + UIY/3.0}, 300.0, 200.0, state.get_color(), ctx, &mut canvas)?;
+        for (index, state) in State::iter().enumerate() {
+            drawables_trait::make_rect(
+                game_state::cordinate::Cordinates {
+                    x: index as f32 * 300.0,
+                    y: GAME_SCREENY + UIY / 3.0,
+                },
+                300.0,
+                200.0,
+                state.get_color(),
+                ctx,
+                &mut canvas,
+            )?;
             canvas.draw(
                 &state.get_building_drawable(),
-                graphics::DrawParam::default().dest([300.0*index as f32 , GAME_SCREENY + UIY / 2.0]),
+                graphics::DrawParam::default()
+                    .dest([300.0 * index as f32, GAME_SCREENY + UIY / 2.0]),
             );
         }
 
@@ -72,42 +83,63 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 }
 
 //TODO
-//make not panic on fail input
+//maybe make loop into its own function
 fn main() -> ggez::GameResult {
-    let mut user_game_save_choise=String::new();
-    println!("1: New Game \n2: Load Game");
+    loop {
+        let mut user_game_save_choise = String::new();
+        println!("1: New Game \n2: Load Game");
 
-    std::io::stdin().read_line(&mut user_game_save_choise).expect("failed line read");
+        std::io::stdin()
+            .read_line(&mut user_game_save_choise)
+            .expect("failed line read");
 
-    let user_game_save_choise:u32=match user_game_save_choise.trim().parse() {
-        Ok(num)=>num,
-        Err(_)=>panic!("incorrect input"),
-    };
+        let user_game_save_choise: u32 = match user_game_save_choise.trim().parse() {
+            Ok(num) => num,
+            Err(_) => {
+                println!("incorrect input");
+                continue;
+            }
+        };
 
+        //TODO
+        //make possible to retry input
+        //make possible to give save and load filenames
+        let choise = match user_game_save_choise {
+            1 => serialisation::GameOptions::NewGame,
+            2 => {
+                println!("name of the save file? ");
+                let mut input_name: String = String::new();
+                std::io::stdin()
+                    .read_line(&mut input_name)
+                    .expect("failed line read");
+                serialisation::GameOptions::LoadGame(input_name.trim().to_string())
+            }
 
-    //TODO
-    //make possible to retry input
-    //make possible to give save and load filenames 
-    let choise=match user_game_save_choise {
-        1=>serialisation::GameOptions::NewGame,
-        2=>serialisation::GameOptions::LoadGame("test_save.json".to_string()),
-        _=>panic!("{} is incorrect input",user_game_save_choise),
-    };
+            _ => {
+                println!("{} is incorrect input", user_game_save_choise);
+                continue;
+            }
+        };
 
+        let state: Option<MainState> = match choise {
+            GameOptions::NewGame => Some(MainState::new()),
+            GameOptions::LoadGame(filename) => serialisation::load_game(&filename),
+            //TODO make a better error handle here when we make a loop thing for main menu thing
+        };
 
-    let (mut ctx, event_loop) = ggez::ContextBuilder::new("gametest", "kimierik")
-        .window_mode(
-            ggez::conf::WindowMode::default().dimensions(GAME_SCREENW + UIX, GAME_SCREENY + UIY),
-        )
-        .build()
-        .expect("cb ERROR");
-
-    let state=match choise {
-        GameOptions::NewGame=>MainState::new(),
-        GameOptions::LoadGame(filename)=>serialisation::load_game(&filename).unwrap(),
-        //TODO make a better error handle here when we make a loop thing for main menu thing
-    };
-
-
-    ggez::event::run(ctx, event_loop, state)
+        match state {
+            Some(state) => {
+                //ctx used to be mut, idk if needed. started complaining
+                let (ctx, event_loop) = ggez::ContextBuilder::new("gametest", "kimierik")
+                    .window_mode(
+                        ggez::conf::WindowMode::default()
+                            .dimensions(GAME_SCREENW + UIX, GAME_SCREENY + UIY),
+                    )
+                    .build()
+                    .expect("cb ERROR");
+                ggez::event::run(ctx, event_loop, state)
+            }
+            None => continue,
+        }
+    }
 }

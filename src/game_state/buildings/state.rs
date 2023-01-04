@@ -1,9 +1,7 @@
-
-use ggez::graphics;
-use strum_macros::EnumIter;
-use strum::IntoEnumIterator;
 use super::Building;
-
+use ggez::graphics;
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
 
 #[derive(EnumIter, Debug, Clone, Copy)]
 pub enum State {
@@ -15,7 +13,6 @@ impl State {
     pub fn get_building_info(&self) -> Building {
         Building::make_building(self)
     }
-
 
     pub fn get_enum_from_string(find: &str) -> Self {
         for i in State::iter() {
@@ -44,8 +41,6 @@ impl State {
         txt
     }
 }
-
-
 
 impl std::fmt::Display for State {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

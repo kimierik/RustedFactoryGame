@@ -1,5 +1,5 @@
-use super::buildings::Building;
 use super::buildings::material::Material;
+use super::buildings::Building;
 
 pub struct GameResources {
     temp_money: i32,
@@ -18,8 +18,7 @@ impl GameResources {
         }
     }
 
-
-    pub fn make_instance_with_money(mon:i32) -> Self {
+    pub fn make_instance_with_money(mon: i32) -> Self {
         GameResources {
             total_money: mon,
             temp_money: 0,
@@ -27,8 +26,6 @@ impl GameResources {
             last_collection_income: 0,
         }
     }
-
-
 
     fn get_total_collection_money(&self) -> i32 {
         (self.temp_money as f32 * self.temp_money_multiplier) as i32
@@ -72,6 +69,4 @@ impl GameResources {
             self.total_money, self.last_collection_income
         )
     }
-
-
 }

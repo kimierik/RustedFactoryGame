@@ -1,19 +1,19 @@
 use ggez::graphics;
 use std::{collections::HashMap, time::Instant, vec};
 
+pub mod buildings;
 pub mod cordinate;
 pub mod game_resources;
 pub mod player;
 pub mod screen_info;
 pub mod tile;
-pub mod buildings;
 
+use buildings::state::State;
 use cordinate::Cordinates;
 use game_resources::GameResources;
 use player::Player;
 use screen_info::ScreenInfo;
 use tile::Tile;
-use buildings::state::State;
 
 use crate::inputs;
 use crate::inputs::player_actions::PlayerActions;
@@ -42,17 +42,16 @@ impl MainState {
         }
     }
 
-    pub fn new_from_save(mapvec:Vec<Tile>,money:i32)->Self{
-        MainState { 
-        map: mapvec,
-        player: Player::new(), 
-        screendata: screen_info::ScreenInfo::new(), 
-        resources: GameResources::make_instance_with_money(money), 
-        time_since_last_collection_cycle:Instant::now(), 
-        input_data: inputs::keyboard_input_data::InputData::new(),
+    pub fn new_from_save(mapvec: Vec<Tile>, money: i32) -> Self {
+        MainState {
+            map: mapvec,
+            player: Player::new(),
+            screendata: screen_info::ScreenInfo::new(),
+            resources: GameResources::make_instance_with_money(money),
+            time_since_last_collection_cycle: Instant::now(),
+            input_data: inputs::keyboard_input_data::InputData::new(),
         }
     }
-
 
     pub fn change_player_location_x(&mut self, x: f32) {
         self.player.add_cords(&Cordinates::from(x, 0.0));
@@ -159,7 +158,7 @@ impl MainState {
         self.time_since_last_collection_cycle = Instant::now();
     }
 
-    pub fn get_resource(&self)->&GameResources{
+    pub fn get_resource(&self) -> &GameResources {
         &self.resources
     }
 }
