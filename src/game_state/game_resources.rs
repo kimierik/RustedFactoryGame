@@ -1,10 +1,13 @@
-
 use json::JsonValue;
 use json::array;
+use json::object;
 
 use super::buildings::material::Material;
 use super::buildings::material::PermanentMaterial;
 use super::buildings::Building;
+
+
+//brake bile into multiple files
 
 
 //a simple way to possibly have i32 and f32 values that can be used as parameters
@@ -50,11 +53,11 @@ impl PermanentGameResources{
 
 
     //needs to be updated for every added resource
-    pub fn get_as_serialisable(&self)->Vec<JsonValue>{
-        let mut retvec=vec![];
-        retvec.push( array![PermanentMaterial::Money.to_string(),self.money] );
+    pub fn get_as_serialisable(&self)->JsonValue{
+        let mut returned_json = json::JsonValue::new_object();
+        returned_json[PermanentMaterial::Money.to_string()]=self.money.into();
 
-        retvec
+        returned_json
     }
 
 
@@ -72,6 +75,7 @@ impl PermanentGameResources{
                 };
                 self.money+=added_val;
             },
+
         }
 
     }
@@ -135,10 +139,12 @@ impl GameResources {
         &self.perm_resources
     }
 
+    //add money to temp money
     pub fn add_money(&mut self, value: i32) {
         self.temp_money += value;
     }
 
+    //permanent money subtract
     pub fn subtract_money(&mut self, value: i32) {
         self.perm_resources.add_to_resource(MaterialValue::I32(-value), PermanentMaterial::Money) ;
     }

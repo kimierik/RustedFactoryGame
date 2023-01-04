@@ -1,4 +1,4 @@
-use std::io::{Read, Write};
+use std::io::Write;
 
 use json::{object, JsonValue};
 
@@ -8,6 +8,7 @@ use game_state::buildings::state::State;
 use game_state::game_resources::PermanentGameResources;
 use game_state::game_resources::MaterialValue;
     //
+mod load_utils;
 
 pub enum GameOptions {
     NewGame,
@@ -28,9 +29,7 @@ pub fn save_game(game: &MainState) {
         serialised_array.push(i).unwrap();
     }
 
-
     let resources=game.get_resource().get_permanent_resources().get_as_serialisable();
-
 
     let save = object! {
         Resources:resources,
@@ -65,102 +64,47 @@ pub fn save_game(game: &MainState) {
 
 //reads file and makes a mainstate instanse from the files data
 pub fn load_game(filename: &str) -> Option<MainState> {
-    let mut file = match std::fs::File::open(filename) {
-        Ok(file) => file,
-        Err(err) => {
-            println!("file open error: {}", err);
-            return None;
-        }
+
+    let json_data= match  load_utils::get_json_data_from_file(filename){
+        Some(data)=>data,
+        None=>return None,
     };
 
-    let mut s: String = String::new();
-
-    match file.read_to_string(&mut s) {
-        Ok(a) => a,
-        Err(err) => {
-            println!("error reading from file {}", err);
-            return None;
-        }
-    };
-
-    let json_data: JsonValue = match json::parse(&s) {
-        Ok(data) => data,
-        Err(err) => {
-            println!("failed to parse json data: {}", err);
-            return None;
-        }
-    };
-
-
-
-    //so we can get an vec of touples from PermanentGameResources that cointains (PermanentMaterial:MaterialValue) val can be-
-    //f32 or i32 or whatever we are storing
-    //
-    //loop resnames save it to something a struct or another vec of touples
-    //somethign that we can give to the constructor
-
-
-    //break this forloop into its own function
+    //list of resourses we are looking for
     let resourse_data_to_fech=PermanentGameResources::get_serialisable_materials_info();
+
+    //vec that we are going to give to the mainstate constructor
     let mut resourse_data_to_send:Vec<(PermanentMaterial,MaterialValue)> =vec![];
 
+    //get resource data from json
     for (material,matval) in resourse_data_to_fech.iter(){
         resourse_data_to_send.push((material.clone(),
-        match matval {
-            MaterialValue::I32(_num)=>{
-                let saved_money = match json_data["Resources"][material.to_string()].as_i32() {
-                    Some(number) => number,
-                    None => {
-                        println!("error converting money ");
-                        return None;
-                    }
-                };
-                MaterialValue::I32(saved_money)
-            },
-
-            MaterialValue::F32(_num)=>{
-                let saved_money = match json_data["Resources"][material.to_string()].as_f32() {
-                    Some(number) => number,
-                    None => {
-                        println!("error converting money ");
-                        return None;
-                    }
-                };
-                MaterialValue::F32(saved_money)
-            },
-        }))
+        match  load_utils::get_material_value_from_json(material,matval,json_data.clone()){
+            Some(asd)=>asd,
+            None=>return None,
+        } ))
     }
 
 
-
+    //load map
     let saved_map = &json_data["Map"];
+    //vector of tiles, can give directly to mainstate constructor
     let mut tilevec: Vec<Tile> = vec![];
 
+    
     for i in 0..saved_map.len() {
         //this should be [16,9,"FactoryBlock"]
-
-        let savedx: f32 = match saved_map[i][0].as_f32() {
-            Some(num) => num,
-            None => {
-                println!(
-                    "Load failed: tile cordinate x:{} cannot be converted to num",
-                    saved_map[i][0]
-                );
-                return None;
-            }
+        
+        let savedx= match load_utils::get_cordinate_from_index(saved_map, i,0){
+            Some(val)=>val,
+            None=>return None,
+        };
+        let savedy= match load_utils::get_cordinate_from_index(saved_map, i,1){
+            Some(val)=>val,
+            None=>return None,
         };
 
-        let savedy: f32 = match saved_map[i][1].as_f32() {
-            Some(num) => num,
-            None => {
-                println!(
-                    "Load failed: tile cordinate y:{} cannot be converted to num",
-                    saved_map[i][1]
-                );
-                return None;
-            }
-        };
-
+        //construct tile and add it to the tilevec
         tilevec.push(Tile::create_tile_with(
             game_state::cordinate::Cordinates {
                 x: savedx,
