@@ -84,6 +84,9 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 
 //TODO
 //maybe make loop into its own function
+//give possibility to name the save 
+//when ypu input save it asks for the save name. then it names it when saved
+//then when we load we also save the load files name
 fn main() -> ggez::GameResult {
     loop {
         let mut user_game_save_choise = String::new();
@@ -96,14 +99,11 @@ fn main() -> ggez::GameResult {
         let user_game_save_choise: u32 = match user_game_save_choise.trim().parse() {
             Ok(num) => num,
             Err(_) => {
-                println!("incorrect input");
+                println!("incorrect input: not a number");
                 continue;
             }
         };
 
-        //TODO
-        //make possible to retry input
-        //make possible to give save and load filenames
         let choise = match user_game_save_choise {
             1 => serialisation::GameOptions::NewGame,
             2 => {
@@ -124,7 +124,6 @@ fn main() -> ggez::GameResult {
         let state: Option<MainState> = match choise {
             GameOptions::NewGame => Some(MainState::new()),
             GameOptions::LoadGame(filename) => serialisation::load_game(&filename),
-            //TODO make a better error handle here when we make a loop thing for main menu thing
         };
 
         match state {

@@ -18,6 +18,8 @@ use tile::Tile;
 use crate::inputs;
 use crate::inputs::player_actions::PlayerActions;
 
+use self::game_resources::PermanentGameResources;
+
 pub struct MainState {
     map: Vec<Tile>,
     player: Player,
@@ -42,12 +44,12 @@ impl MainState {
         }
     }
 
-    pub fn new_from_save(mapvec: Vec<Tile>, money: i32) -> Self {
+    pub fn new_from_save(mapvec: Vec<Tile>, materials: PermanentGameResources) -> Self {
         MainState {
             map: mapvec,
             player: Player::new(),
             screendata: screen_info::ScreenInfo::new(),
-            resources: GameResources::make_instance_with_money(money),
+            resources: GameResources::make_instance_with_permanent(materials),
             time_since_last_collection_cycle: Instant::now(),
             input_data: inputs::keyboard_input_data::InputData::new(),
         }
