@@ -1,3 +1,4 @@
+use super::buildings::material::BuildingType;
 use super::buildings::state::State;
 use super::Cordinates;
 use super::GameResources;
@@ -7,9 +8,11 @@ use json::array;
 
 //move state away to another file
 
+#[derive(Debug)]
 pub struct Tile {
     cords: Cordinates,
     state: State,
+    pub productivity_multiplier:f32,
 }
 
 impl Tile {
@@ -17,6 +20,7 @@ impl Tile {
         Tile {
             cords: tile_location,
             state: machine,
+            productivity_multiplier:1.0,
         }
     }
 
@@ -43,14 +47,43 @@ impl Tile {
     }
 
     pub fn apply_effect(&self, resouce_pool: &mut GameResources) {
-        resouce_pool.add_resource(self.get_state().get_building_info())
+        match &self.get_state().get_building_type() {
+            BuildingType::Production(_)=> resouce_pool.add_resource(&self.get_state().get_building_info(),self.productivity_multiplier),
+            BuildingType::Buff(_)=>(),
+            
+        }
+    }
+
+    //offsets given cordinate vector with its own cordinates
+    fn get_ofsetted_cordinates(&self,cords:&Vec< (f32,Cordinates)>)->Vec<(f32,Cordinates)>{
+        let mut retvec:Vec<(f32,Cordinates)> =vec![];
+        for (va,cord) in cords{
+            retvec.push((va.clone(),self.cords+cord.clone()));
+        }
+        retvec
+    }
+
+    pub fn add_buff(&mut self,val:f32){
+        self.productivity_multiplier+=val
+    }
+
+    pub fn reset_buffs(&mut self){
+        self.productivity_multiplier=1.0;
     }
 
     pub fn get_state(&self) -> &State {
         &self.state
     }
 
+
+    //returns world cordinates this tile is attempting to buff
+    pub fn get_buffed_cords(&self,cords:Vec<(f32,Cordinates)>)-> Vec<(f32,Cordinates)>{
+         self.get_ofsetted_cordinates(&cords)
+    }
+
     pub fn get_as_serialisable(&self) -> json::JsonValue {
         array![self.cords.x, self.cords.y, self.state.to_string()]
     }
+
+
 }

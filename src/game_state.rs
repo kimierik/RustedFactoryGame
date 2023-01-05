@@ -18,6 +18,7 @@ use tile::Tile;
 use crate::inputs;
 use crate::inputs::player_actions::PlayerActions;
 
+use self::buildings::material::BuildingType;
 use self::game_resources::PermanentGameResources;
 
 pub struct MainState {
@@ -70,7 +71,9 @@ impl MainState {
                 self.map.push(Tile::create_tile_with(
                     self.get_player_ref().get_cords().clone(),
                     state,
-                ))
+                ));
+                //is 2x even when this is off
+                self.loop_tiles_and_apply_buffs();
             }
         }
     }
@@ -98,6 +101,15 @@ impl MainState {
         false
     }
 
+    fn get_mut_tile_from_cord(&mut self ,cord:Cordinates)->Option<&mut Tile>{
+        for tile in &mut self.map {
+            if tile.is_here(&cord) {
+                return Some(tile);
+            }
+        }
+        None
+    }
+
     //gets the tile that the player is standing on
     fn get_tile_on_player(&self) -> Option<(&Tile, usize)> {
         for (index, tile) in self.map.iter().enumerate() {
@@ -116,6 +128,35 @@ impl MainState {
         self.resources.collapse_money();
     }
 
+    
+    pub fn loop_tiles_and_apply_buffs(&mut self){
+
+        let mut tiles_to_buff:Vec<Vec<(f32,Cordinates)>> =vec![];
+
+        //hmm
+        for tile in self.map.iter(){
+            //we should not match here, call buff match the option to see if it is buff  builfin
+            match tile.get_state().get_building_type() {
+                BuildingType::Buff(cords)=>tiles_to_buff.push(tile.get_buffed_cords(cords)),
+                _=>(),//only buff buildings
+            }
+        }
+
+        // cannot happen in same loop because rust
+        for buffed_area in tiles_to_buff{
+            for (value,cord) in buffed_area{
+                match self.get_mut_tile_from_cord(cord) {
+                    Some(tile)=>{tile.reset_buffs(); tile.add_buff(value);},
+                    None=>(),
+                };
+            }
+        }
+
+
+    }
+
+
+
     pub fn resources_as_string(&self) -> String {
         self.resources.to_string()
     }
@@ -128,7 +169,6 @@ impl MainState {
     }
 
     //gettes so we can have private fields
-
     pub fn get_time_since_collect(&self) -> &Instant {
         &self.time_since_last_collection_cycle
     }

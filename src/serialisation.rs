@@ -2,7 +2,7 @@ use std::io::Write;
 
 use json::{object, JsonValue};
 
-use crate::game_state::buildings::material::PermanentMaterial;
+use crate::game_state::buildings::material::Material;
 use crate::game_state::{self, tile::Tile, MainState};
 use game_state::buildings::state::State;
 use game_state::game_resources::PermanentGameResources;
@@ -74,7 +74,7 @@ pub fn load_game(filename: &str) -> Option<MainState> {
     let resourse_data_to_fech=PermanentGameResources::get_serialisable_materials_info();
 
     //vec that we are going to give to the mainstate constructor
-    let mut resourse_data_to_send:Vec<(PermanentMaterial,MaterialValue)> =vec![];
+    let mut resourse_data_to_send:Vec<(Material,MaterialValue)> =vec![];
 
     //get resource data from json
     for (material,matval) in resourse_data_to_fech.iter(){

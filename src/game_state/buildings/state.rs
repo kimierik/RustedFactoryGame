@@ -1,4 +1,4 @@
-use super::Building;
+use super::{Building, material::BuildingType};
 use ggez::graphics;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
@@ -12,6 +12,10 @@ pub enum State {
 impl State {
     pub fn get_building_info(&self) -> Building {
         Building::make_building(self)
+    }
+
+    pub fn get_building_type(&self)->BuildingType{
+        Building::make_building(self).building_type
     }
 
     pub fn get_enum_from_string(find: &str) -> Self {

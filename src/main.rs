@@ -33,6 +33,8 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
             self.reset_time_since_collect();
         }
 
+        //println!("{:?}",self.get_map());
+
         Ok(())
     }
 

@@ -11,13 +11,13 @@ the idea is to write clean rust code to make a game with freatures i can use in 
 ## implemented features  
 remappable and scaleable input system that supports modifiers  
 saving and loading data  
+tiles can interract with each other locally  
 infinite grid  
 
   
   
 ## planned features  
 input system to support holding  
-proper tile interaction  
 better ui  
 better way to choose filenames when saving or loading game data  
 main menu  

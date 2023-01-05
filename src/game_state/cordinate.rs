@@ -1,7 +1,7 @@
 use super::ScreenInfo;
 
 //global cord struct
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct Cordinates {
     pub x: f32,
     pub y: f32,

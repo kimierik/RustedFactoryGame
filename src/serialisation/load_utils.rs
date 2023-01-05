@@ -1,7 +1,7 @@
 
 use std::io::Read;
 use json::JsonValue;
-use crate::game_state::buildings::material::PermanentMaterial;
+use crate::game_state::buildings::material::Material;
 use super::game_state::game_resources::MaterialValue;
 
 
@@ -59,7 +59,7 @@ pub fn get_cordinate_from_index(saved_map:&JsonValue, i:usize,index:usize)->Opti
 
 
 
-pub fn get_material_value_from_json(material:&PermanentMaterial,matval:&MaterialValue,json_data:JsonValue)->Option< MaterialValue>{
+pub fn get_material_value_from_json(material:&Material,matval:&MaterialValue,json_data:JsonValue)->Option< MaterialValue>{
     match matval {
         MaterialValue::I32(_num)=>{
             println!("{}",json_data["Resources"][material.to_string()]);

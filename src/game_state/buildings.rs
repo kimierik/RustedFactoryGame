@@ -2,12 +2,15 @@ pub mod material;
 pub mod state;
 
 use material::Material;
+use material::BuildingType;
 use state::State;
+
+use super::cordinate::Cordinates;
 
 //make getters
 pub struct Building {
     pub cost: i32,
-    pub created_material: Material,
+    pub building_type:BuildingType,
     pub produced_amount: f32,
     pub cost_increase: f32,
 }
@@ -18,26 +21,37 @@ impl Building {
         match machine {
             State::FactoryBlock => Building {
                 cost: 1,
-                created_material: Material::Money,
+                building_type:BuildingType::Production(Material::Money),
                 produced_amount: 1.0,
                 cost_increase: 1.0,
             },
 
             State::DefaultBlock => Building {
                 cost: 10,
-                created_material: Material::MoneyMultiplier,
-                produced_amount: 0.01,
+                //2.0 in building type constructor is supposed to be produced_amount
+                building_type:BuildingType::Buff(vec![(2.0,Cordinates::from(0.0, -1.0))]),
+                produced_amount: 2.0,
                 cost_increase: 1.0,
             },
         }
     }
 
     pub fn to_string(&self, is: &State) -> String {
-        format!(
-            "          {} \nCost: {} \nAdds: {} to {}",
-            is, self.cost, self.produced_amount, self.created_material
-        )
+        match &self.building_type {
+            BuildingType::Production(mat)=> format!(
+                "          {} \nCost: {} \nAdds: {} to {}",
+                is, self.cost, self.produced_amount, mat
+            ),
+
+            BuildingType::Buff(_)=> format!(
+                "          {} \nCost: {} \nAdds: {} to {}",
+                is, self.cost, self.produced_amount, "buff"
+            ),
+        }
     }
+
+
+
 }
 
 //different buildings and their stats

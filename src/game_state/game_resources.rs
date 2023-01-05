@@ -1,9 +1,7 @@
 use json::JsonValue;
-use json::array;
-use json::object;
 
 use super::buildings::material::Material;
-use super::buildings::material::PermanentMaterial;
+use super::buildings::material::BuildingType;
 use super::buildings::Building;
 
 
@@ -30,12 +28,12 @@ impl PermanentGameResources{
     }
     
 
-    pub fn make_from_vec(save:Vec<(PermanentMaterial,MaterialValue)>)->Self{
+    pub fn make_from_vec(save:Vec<(Material,MaterialValue)>)->Self{
         let mut retval:PermanentGameResources=Self { money: 1 };
 
         for (mat,i) in save{
             match mat {
-                PermanentMaterial::Money=>retval.add_to_resource(i, mat),
+                Material::Money=>retval.add_to_resource(i, mat),
             }
         }
         retval
@@ -44,9 +42,9 @@ impl PermanentGameResources{
 
 
     //needs to be updated for every added resource
-    pub fn get_serialisable_materials_info()->Vec<(PermanentMaterial,MaterialValue)>{
+    pub fn get_serialisable_materials_info()->Vec<(Material,MaterialValue)>{
         let mut retvec=vec![];
-        retvec.push( (PermanentMaterial::Money, MaterialValue::I32(0)) );
+        retvec.push( (Material::Money, MaterialValue::I32(0)) );
 
         retvec
     }
@@ -55,7 +53,7 @@ impl PermanentGameResources{
     //needs to be updated for every added resource
     pub fn get_as_serialisable(&self)->JsonValue{
         let mut returned_json = json::JsonValue::new_object();
-        returned_json[PermanentMaterial::Money.to_string()]=self.money.into();
+        returned_json[Material::Money.to_string()]=self.money.into();
 
         returned_json
     }
@@ -66,14 +64,16 @@ impl PermanentGameResources{
     }
 
     //reformat
-    pub fn add_to_resource(&mut self,val:MaterialValue,mat:PermanentMaterial){
+    pub fn add_to_resource(&mut self,val:MaterialValue,mat:Material){
         match mat {
-            PermanentMaterial::Money=>{
+            Material::Money=>{
                 let added_val:i32=match val {
                     MaterialValue::I32(val)=>val,
+
                     _=>panic!("tried to add wrong thing to money"),
                 };
                 self.money+=added_val;
+                //println!("{}",added_val);
             },
 
         }
@@ -92,7 +92,6 @@ impl PermanentGameResources{
 pub struct GameResources {
     perm_resources:PermanentGameResources,
     temp_money: i32,
-    temp_money_multiplier: f32,
     last_collection_income: i32,
 }
 
@@ -101,7 +100,6 @@ impl GameResources {
         GameResources {
             perm_resources:PermanentGameResources::create_empty(),
             temp_money: 0,
-            temp_money_multiplier: 1.0,
             last_collection_income: 0,
         }
     }
@@ -110,28 +108,25 @@ impl GameResources {
     //mayby make saved res its own thing
 
     pub fn make_instance_with_permanent(res:PermanentGameResources)->Self{
-        GameResources { perm_resources: res, temp_money: 0, temp_money_multiplier: 1.0, last_collection_income: 0 }
+        GameResources { perm_resources: res, temp_money: 0,  last_collection_income: 0 }
     }
 
-
-
-    fn get_total_collection_money(&self) -> i32 {
-        (self.temp_money as f32 * self.temp_money_multiplier) as i32
-    }
 
     //mess
     pub fn collapse_money(&mut self) {
-        self.last_collection_income = 0;
-        self.last_collection_income += self.get_total_collection_money();
-        self.perm_resources.add_to_resource(MaterialValue::I32(self.last_collection_income), PermanentMaterial::Money);
+        self.last_collection_income=self.temp_money;
+        self.perm_resources.add_to_resource(MaterialValue::I32(self.temp_money), Material::Money);
         self.temp_money = 0;
-        self.temp_money_multiplier = 1.0;
     }
 
-    pub fn add_resource(&mut self, building_info: Building) {
-        match building_info.created_material {
-            Material::Money => self.add_money(building_info.produced_amount as i32),
-            Material::MoneyMultiplier => self.add_multiplier(building_info.produced_amount),
+    //gets called tiwce
+    pub fn add_resource(&mut self, building_info: &Building,multiplier:f32) {
+        match &building_info.building_type {
+            BuildingType::Production(mat)=>  match  mat{
+                Material::Money => self.add_money((building_info.produced_amount * multiplier) as i32),
+            },
+
+            BuildingType::Buff(_)=>(),
         }
     }
 
@@ -146,12 +141,9 @@ impl GameResources {
 
     //permanent money subtract
     pub fn subtract_money(&mut self, value: i32) {
-        self.perm_resources.add_to_resource(MaterialValue::I32(-value), PermanentMaterial::Money) ;
+        self.perm_resources.add_to_resource(MaterialValue::I32(-value), Material::Money) ;
     }
 
-    pub fn add_multiplier(&mut self, val: f32) {
-        self.temp_money_multiplier += val;
-    }
 
     pub fn get_money(&self) -> &i32 {
         &self.perm_resources.get_money()
