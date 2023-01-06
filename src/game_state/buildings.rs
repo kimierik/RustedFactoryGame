@@ -2,10 +2,17 @@ pub mod material;
 pub mod state;
 
 use material::Material;
-use material::BuildingType;
 use state::State;
 
 use super::cordinate::Cordinates;
+
+
+#[derive( Debug, Clone)]
+pub enum BuildingType{
+    Production(Material),
+    Buff(Vec<(f32,Cordinates)>),//affected tiles relative to the tiles own cordinates
+}
+
 
 //make getters
 pub struct Building {
@@ -32,6 +39,12 @@ impl Building {
                 building_type:BuildingType::Buff(vec![(2.0,Cordinates::from(0.0, -1.0))]),
                 produced_amount: 2.0,
                 cost_increase: 1.0,
+            },
+            State::RockMine => Building {
+                cost: 100,
+                building_type:BuildingType::Production(Material::Rock),
+                produced_amount: 1.0,
+                cost_increase: 10.0,
             },
         }
     }

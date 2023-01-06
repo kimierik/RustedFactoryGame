@@ -2,7 +2,7 @@
 use std::io::Read;
 use json::JsonValue;
 use crate::game_state::buildings::material::Material;
-use super::game_state::game_resources::MaterialValue;
+use crate::game_state::buildings::material::MaterialValue;
 
 
 //file is to house functions load game uses in a seperate file

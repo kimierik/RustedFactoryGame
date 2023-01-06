@@ -1,24 +1,21 @@
 use strum_macros::EnumIter;
 use strum::IntoEnumIterator;
 
-use crate::game_state::cordinate::Cordinates;
 
-
-#[derive( Debug, Clone)]
-pub enum BuildingType{
-    Production(Material),
-    Buff(Vec<(f32,Cordinates)>),//affected tiles relative to the tiles own cordinates
+//simple way to give i32 or f32 as argument witout using generics
+#[allow(dead_code)]
+pub enum MaterialValue{
+    I32(i32),
+    F32(f32),
 }
-
 
 
 #[derive(EnumIter, Debug, Clone)]
 pub enum Material {
     Money,
+    Rock,
 }
 
-//maybe too much to change per material 
-//dead code in here bc functions are usefull in future
 
 impl Material{
 

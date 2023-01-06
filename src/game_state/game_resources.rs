@@ -1,39 +1,36 @@
 use json::JsonValue;
 
 use super::buildings::material::Material;
-use super::buildings::material::BuildingType;
+use super::buildings::material::MaterialValue;
+use super::buildings::BuildingType;
 use super::buildings::Building;
 
 
-//brake bile into multiple files
+//brake file into multiple files
 
 
-//a simple way to possibly have i32 and f32 values that can be used as parameters
-#[allow(dead_code)]
-pub enum MaterialValue{
-    I32(i32),
-    F32(f32),
-}
 
 
 
 pub struct PermanentGameResources{
     money:i32,
+    rock:i32,
 }
 
 impl PermanentGameResources{
     
     pub fn create_empty()->Self{
-        PermanentGameResources { money: 1 }
+        PermanentGameResources { money: 1,rock:0 }
     }
     
 
     pub fn make_from_vec(save:Vec<(Material,MaterialValue)>)->Self{
-        let mut retval:PermanentGameResources=Self { money: 1 };
+        let mut retval:PermanentGameResources=Self { money: 1,rock:0 };
 
         for (mat,i) in save{
             match mat {
                 Material::Money=>retval.add_to_resource(i, mat),
+                Material::Rock=>retval.add_to_resource(i, mat),
             }
         }
         retval
@@ -62,6 +59,9 @@ impl PermanentGameResources{
     pub fn get_money(&self)->&i32{
         &self.money
     }
+    pub fn get_rock(&self)->&i32{
+        &self.rock
+    }
 
     //reformat
     pub fn add_to_resource(&mut self,val:MaterialValue,mat:Material){
@@ -69,15 +69,23 @@ impl PermanentGameResources{
             Material::Money=>{
                 let added_val:i32=match val {
                     MaterialValue::I32(val)=>val,
+                    _=>panic!("tried to add not i32 to money"),
 
-                    _=>panic!("tried to add wrong thing to money"),
                 };
                 self.money+=added_val;
                 //println!("{}",added_val);
             },
+            Material::Rock=>{
+                let added_val:i32=match val {
+                    MaterialValue::I32(val)=>val,
+                    _=>panic!("tried to add not i32 to rock"),
+
+                };
+                self.rock+=added_val;
+
+            },
 
         }
-
     }
 
 
@@ -99,6 +107,8 @@ impl GameResources {
     pub fn make_instance() -> Self {
         GameResources {
             perm_resources:PermanentGameResources::create_empty(),
+            //these 2 are usef for calculating income
+            //make another one that is scaleable
             temp_money: 0,
             last_collection_income: 0,
         }
@@ -119,11 +129,12 @@ impl GameResources {
         self.temp_money = 0;
     }
 
-    //gets called tiwce
+    //change to add whatever is given 
     pub fn add_resource(&mut self, building_info: &Building,multiplier:f32) {
         match &building_info.building_type {
             BuildingType::Production(mat)=>  match  mat{
                 Material::Money => self.add_money((building_info.produced_amount * multiplier) as i32),
+                Material::Rock => self.perm_resources.add_to_resource(MaterialValue::I32((building_info.produced_amount*multiplier)as i32), mat.clone()),
             },
 
             BuildingType::Buff(_)=>(),
@@ -151,8 +162,8 @@ impl GameResources {
 
     pub fn to_string(&self) -> String {
         format!(
-            "money: {} \ncurrent income: {}",
-            self.perm_resources.get_money(), self.last_collection_income
+            "money: {} \ncurrent income: {}\nrock: {}",
+            self.perm_resources.get_money(), self.last_collection_income,self.perm_resources.get_rock()
         )
     }
 }

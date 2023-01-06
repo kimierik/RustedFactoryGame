@@ -1,4 +1,4 @@
-use super::buildings::material::BuildingType;
+use super::buildings::BuildingType;
 use super::buildings::state::State;
 use super::Cordinates;
 use super::GameResources;

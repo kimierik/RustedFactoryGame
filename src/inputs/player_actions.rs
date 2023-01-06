@@ -19,6 +19,7 @@ pub enum PlayerActions {
     Demolish,
     MakeFactory,
     MakeDefault,
+    MakeRockMine,
     NoAction,
 
     SaveGame,
@@ -55,6 +56,7 @@ impl PlayerActions {
             PlayerActions::Demolish => game.check_and_remove_tile(),
             PlayerActions::MakeFactory => game.check_and_place_tile(State::FactoryBlock),
             PlayerActions::MakeDefault => game.check_and_place_tile(State::DefaultBlock),
+            PlayerActions::MakeRockMine => game.check_and_place_tile(State::RockMine),
             PlayerActions::NoAction => (),
 
             PlayerActions::SaveGame => serialisation::save_game(game),

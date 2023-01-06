@@ -18,7 +18,7 @@ use tile::Tile;
 use crate::inputs;
 use crate::inputs::player_actions::PlayerActions;
 
-use self::buildings::material::BuildingType;
+use self::buildings::BuildingType;
 use self::game_resources::PermanentGameResources;
 
 pub struct MainState {

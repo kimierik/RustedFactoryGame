@@ -6,7 +6,7 @@ use crate::game_state::buildings::material::Material;
 use crate::game_state::{self, tile::Tile, MainState};
 use game_state::buildings::state::State;
 use game_state::game_resources::PermanentGameResources;
-use game_state::game_resources::MaterialValue;
+use game_state::buildings::material::MaterialValue;
     //
 mod load_utils;
 

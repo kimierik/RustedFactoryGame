@@ -1,4 +1,4 @@
-use super::{Building, material::BuildingType};
+use super::{Building, BuildingType};
 use ggez::graphics;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
@@ -7,6 +7,7 @@ use strum_macros::EnumIter;
 pub enum State {
     FactoryBlock,
     DefaultBlock,
+    RockMine,
 }
 
 impl State {
@@ -31,6 +32,7 @@ impl State {
         match self {
             State::DefaultBlock => ggez::graphics::Color::BLUE,
             State::FactoryBlock => ggez::graphics::Color::GREEN,
+            State::RockMine => ggez::graphics::Color::RED,
         }
     }
 
