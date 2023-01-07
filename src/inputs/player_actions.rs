@@ -1,4 +1,4 @@
-use crate::{game_state::cordinate::Cordinates, serialisation};
+use crate::{game_state::{cordinate::Cordinates, buildings::Building}, serialisation};
 
 use super::*;
 use strum::IntoEnumIterator;
@@ -54,9 +54,9 @@ impl PlayerActions {
                 .offset_pan(Cordinates { x: 1.0, y: 0.0 }),
 
             PlayerActions::Demolish => game.check_and_remove_tile(),
-            PlayerActions::MakeFactory => game.check_and_place_tile(State::FactoryBlock),
-            PlayerActions::MakeDefault => game.check_and_place_tile(State::DefaultBlock),
-            PlayerActions::MakeRockMine => game.check_and_place_tile(State::RockMine),
+            PlayerActions::MakeFactory => game.check_and_place_tile(Building::create_building(&State::FactoryBlock(Building::default()))),
+            PlayerActions::MakeDefault => game.check_and_place_tile(Building::create_building(&State::DefaultBlock(Building::default()))),
+            PlayerActions::MakeRockMine => game.check_and_place_tile(Building::create_building(&State::RockMine(Building::default()))),
             PlayerActions::NoAction => (),
 
             PlayerActions::SaveGame => serialisation::save_game(game),
