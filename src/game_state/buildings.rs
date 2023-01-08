@@ -3,6 +3,7 @@ pub mod state;
 
 use material::Material;
 use state::State;
+use ggez::graphics::Color;
 
 use super::cordinate::Cordinates;
 
@@ -15,11 +16,13 @@ pub enum BuildingType{
 
 
 //make getters
+//needs what material this building costs
 pub struct Building {
     pub cost: i32,
     pub building_type:BuildingType,
     pub produced_amount: f32,
     pub cost_increase: f32,
+    pub color:Color,
 }
 
 impl Building {
@@ -31,6 +34,7 @@ impl Building {
                 building_type:BuildingType::Production(Material::Money),
                 produced_amount: 1.0,
                 cost_increase: 1.0,
+                color:Color::GREEN,
             },
 
             State::DefaultBlock => Building {
@@ -39,12 +43,14 @@ impl Building {
                 building_type:BuildingType::Buff(vec![(2.0,Cordinates::from(0.0, -1.0))]),
                 produced_amount: 2.0,
                 cost_increase: 1.0,
+                color:Color::BLUE,
             },
             State::RockMine => Building {
                 cost: 100,
                 building_type:BuildingType::Production(Material::Rock),
                 produced_amount: 1.0,
                 cost_increase: 10.0,
+                color:Color::RED,
             },
         }
     }

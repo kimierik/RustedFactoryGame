@@ -29,11 +29,7 @@ impl State {
     }
 
     pub fn get_color(&self) -> ggez::graphics::Color {
-        match self {
-            State::DefaultBlock => ggez::graphics::Color::BLUE,
-            State::FactoryBlock => ggez::graphics::Color::GREEN,
-            State::RockMine => ggez::graphics::Color::RED,
-        }
+        self.get_building_info().color
     }
 
     pub fn get_cost_for_tile(&self) -> i32 {

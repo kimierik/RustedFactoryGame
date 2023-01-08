@@ -145,15 +145,21 @@ impl GameResources {
         &self.perm_resources
     }
 
+    pub fn get_mut_perm_resources(&mut self)->&mut PermanentGameResources{
+        &mut self.perm_resources
+    }
+
     //add money to temp money
     pub fn add_money(&mut self, value: i32) {
         self.temp_money += value;
     }
 
     //permanent money subtract
+    /*
     pub fn subtract_money(&mut self, value: i32) {
         self.perm_resources.add_to_resource(MaterialValue::I32(-value), Material::Money) ;
     }
+     * */
 
 
     pub fn get_money(&self) -> &i32 {
