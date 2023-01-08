@@ -68,7 +68,7 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
                 },
                 300.0,
                 200.0,
-                state.get_self_proper_building().color,
+                state.get_color(),
                 ctx,
                 &mut canvas,
             )?;

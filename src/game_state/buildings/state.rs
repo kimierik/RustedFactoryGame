@@ -3,11 +3,11 @@ use ggez::graphics;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-#[derive(EnumIter,Debug, Clone)]
+#[derive(EnumIter, Debug, Clone, Copy)]
 pub enum State {
-    FactoryBlock(Building),
-    DefaultBlock(Building),
-    RockMine(Building),
+    FactoryBlock,
+    DefaultBlock,
+    RockMine,
 }
 
 impl State {
@@ -28,35 +28,20 @@ impl State {
         panic!("load data parse error. enum name incorrect")
     }
 
-    fn get_self_building(&self) ->&Building{
-        match &self {
-            State::FactoryBlock(val)=>val,
-            State::DefaultBlock(val)=>val,
-            State::RockMine(val)=>val,
-        }
-    }
-
-    pub fn get_self_proper_building(&self)->Building{
-        match Building::create_building(self)  {
-            State::FactoryBlock(val)=>val,
-            State::DefaultBlock(val)=>val,
-            State::RockMine(val)=>val,
-        }
-    }
-
-
-    //change when have tim
     pub fn get_color(&self) -> ggez::graphics::Color {
-        self.get_self_building().color
+        match self {
+            State::DefaultBlock => ggez::graphics::Color::BLUE,
+            State::FactoryBlock => ggez::graphics::Color::GREEN,
+            State::RockMine => ggez::graphics::Color::RED,
+        }
     }
 
     pub fn get_cost_for_tile(&self) -> i32 {
         self.get_building_info().cost
     }
 
-    //self is constructed with Building::default
     pub fn get_building_drawable(&self) -> graphics::Text {
-        let data = self.get_self_proper_building().to_string(self);
+        let data = self.get_building_info().to_string(self);
         let mut txt = graphics::Text::new(data);
         txt.set_bounds([crate::UIX, crate::UIY + crate::GAME_SCREENY]);
         txt
