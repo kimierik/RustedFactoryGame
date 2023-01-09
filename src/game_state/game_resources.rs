@@ -63,6 +63,33 @@ impl PermanentGameResources{
         &self.rock
     }
 
+    //this feels bad
+    pub fn has_more_than(&self,mat:&Material,compared_val:MaterialValue)->bool{
+
+        match mat {
+            Material::Money=>{ 
+                let val = match compared_val {
+                    MaterialValue::I32(val)=>val,
+                    MaterialValue::F32(val)=>val as i32,
+                };
+                return self.money>=val;
+            }
+            Material::Rock=>{
+                let val = match compared_val {
+                    MaterialValue::I32(val)=>val,
+                    MaterialValue::F32(val)=>val as i32,
+                };
+                return self.rock>=val;
+            }
+            
+        }
+    }
+
+
+    pub fn subtract_from_resource(&mut self,val:MaterialValue,mat:Material){
+        self.add_to_resource(-val, mat)
+    }
+
     //reformat
     pub fn add_to_resource(&mut self,val:MaterialValue,mat:Material){
         match mat {
@@ -87,8 +114,6 @@ impl PermanentGameResources{
 
         }
     }
-
-
 
 
 

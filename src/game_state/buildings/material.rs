@@ -38,3 +38,18 @@ impl std::fmt::Display for Material {
 }
 
 
+//this is implemented so we can flip a material value
+//usefull for minus operations
+impl std::ops::Neg for MaterialValue{
+    type Output = MaterialValue;
+    fn neg(self) -> Self::Output {
+        match self {
+            MaterialValue::I32(val)=>MaterialValue::I32(-val),
+            MaterialValue::F32(val)=>MaterialValue::F32(-val),
+        }
+    }
+
+
+} 
+
+

@@ -18,6 +18,7 @@ pub enum BuildingType{
 //make getters
 //needs what material this building costs
 pub struct Building {
+    pub cost_material:Material,
     pub cost: i32,
     pub building_type:BuildingType,
     pub produced_amount: f32,
@@ -30,6 +31,7 @@ impl Building {
     fn make_building(machine: &State) -> Self {
         match machine {
             State::FactoryBlock => Building {
+                cost_material:Material::Money,
                 cost: 1,
                 building_type:BuildingType::Production(Material::Money),
                 produced_amount: 1.0,
@@ -38,6 +40,7 @@ impl Building {
             },
 
             State::DefaultBlock => Building {
+                cost_material:Material::Money,
                 cost: 10,
                 //2.0 in building type constructor is supposed to be produced_amount
                 building_type:BuildingType::Buff(vec![(2.0,Cordinates::from(0.0, -1.0))]),
@@ -46,6 +49,7 @@ impl Building {
                 color:Color::BLUE,
             },
             State::RockMine => Building {
+                cost_material:Material::Money,
                 cost: 100,
                 building_type:BuildingType::Production(Material::Rock),
                 produced_amount: 1.0,
@@ -55,16 +59,17 @@ impl Building {
         }
     }
 
+
     pub fn to_string(&self, is: &State) -> String {
         match &self.building_type {
             BuildingType::Production(mat)=> format!(
-                "          {} \nCost: {} \nAdds: {} to {}",
-                is, self.cost, self.produced_amount, mat
+                "          {} \nCost: {} {} \nAdds: {} to {}",
+                is, self.cost,self.cost_material ,self.produced_amount, mat
             ),
 
             BuildingType::Buff(_)=> format!(
-                "          {} \nCost: {} \nAdds: {} to {}",
-                is, self.cost, self.produced_amount, "buff"
+                "          {} \nCost: {} {} \nAdds: {} to {}",
+                is, self.cost, self.cost_material,self.produced_amount, "buff"
             ),
         }
     }

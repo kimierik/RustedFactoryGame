@@ -66,9 +66,11 @@ impl MainState {
 
     //make this to be able to check what the buildings chosts
     pub fn check_and_place_tile(&mut self, state: State) {
-        if self.resources.get_money() >= &state.get_cost_for_tile() {
+        let building=state.get_building_info();
+        //if we have enough material for the material that the building needs
+        if self.resources.get_permanent_resources().has_more_than(&building.cost_material,buildings::material::MaterialValue::I32(building.cost)){
             if !self.player_is_on_tile() {
-                self.resources.get_mut_perm_resources().add_to_resource(buildings::material::MaterialValue::I32(-state.get_cost_for_tile()),buildings::material::Material::Money);
+                self.resources.get_mut_perm_resources().subtract_from_resource(buildings::material::MaterialValue::I32(state.get_cost_for_tile()),building.cost_material);
                 self.map.push(Tile::create_tile_with(
                     self.get_player_ref().get_cords().clone(),
                     state,
