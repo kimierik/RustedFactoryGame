@@ -40,11 +40,15 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
         //handle widget interactions
 		let egui_ctx = self.egui_backend.ctx();
 
-		egui::Window::new("egui-window").default_pos([GAME_SCREENW,300.0]).show(&egui_ctx, |ui| {
-			ui.label("a very nice gui :3");
+		egui::Window::new("menu widget").default_pos([GAME_SCREENW,300.0]).show(&egui_ctx, |ui| {
+			ui.label(" ");
+
 			if ui.button("start new game").clicked() {
                 let state=MainState::new();
                 self.hotload_data(state);
+			}
+			if ui.button("save game").clicked() {
+                serialisation::save_game(&self);
 			}
 			if ui.button("load game").clicked() {
                 let state=serialisation::load_game("test_save.json");
@@ -120,7 +124,7 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 //then when we load we also save the load files name
 fn main() {
 
-    let state =MainState::new();
+    let mut state =MainState::new();
     let (ctx, event_loop) = ggez::ContextBuilder::new("gametest", "kimierik")
         .window_mode(
             ggez::conf::WindowMode::default()
@@ -128,5 +132,7 @@ fn main() {
         )
         .build()
         .expect("cb ERROR");
+ 
+    state.egui_backend.input.set_scale_factor(1.5, (GAME_SCREENW+UIX,GAME_SCREENY+UIY));
     ggez::event::run(ctx, event_loop, state)
 }

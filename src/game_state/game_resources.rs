@@ -39,9 +39,11 @@ impl PermanentGameResources{
 
 
     //needs to be updated for every added resource
+    //make into loop ot somehting
     pub fn get_serialisable_materials_info()->Vec<(Material,MaterialValue)>{
         let mut retvec=vec![];
         retvec.push( (Material::Money, MaterialValue::I32(0)) );
+        retvec.push( (Material::Rock, MaterialValue::I32(0)) );
 
         retvec
     }
@@ -51,6 +53,7 @@ impl PermanentGameResources{
     pub fn get_as_serialisable(&self)->JsonValue{
         let mut returned_json = json::JsonValue::new_object();
         returned_json[Material::Money.to_string()]=self.money.into();
+        returned_json[Material::Rock.to_string()]=self.rock.into();
 
         returned_json
     }
