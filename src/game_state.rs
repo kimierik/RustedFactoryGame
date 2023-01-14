@@ -15,6 +15,8 @@ use player::Player;
 use screen_info::ScreenInfo;
 use tile::Tile;
 
+use ggez_egui::EguiBackend;
+
 use crate::inputs;
 use crate::inputs::player_actions::PlayerActions;
 
@@ -30,6 +32,8 @@ pub struct MainState {
     time_since_last_collection_cycle: Instant,
     //keyboard related data, keymap and input handling related data
     input_data: inputs::keyboard_input_data::InputData,
+
+    pub egui_backend:EguiBackend,
 }
 
 impl MainState {
@@ -42,6 +46,8 @@ impl MainState {
             time_since_last_collection_cycle: Instant::now(),
 
             input_data: inputs::keyboard_input_data::InputData::new(),
+            egui_backend:EguiBackend::default(),
+
         }
     }
 
@@ -53,8 +59,15 @@ impl MainState {
             resources: GameResources::make_instance_with_permanent(materials),
             time_since_last_collection_cycle: Instant::now(),
             input_data: inputs::keyboard_input_data::InputData::new(),
+            egui_backend:EguiBackend::default(),
         }
     }
+
+    pub fn hotload_data(&mut self,newgame:Self){
+        self.map=newgame.map;
+        self.resources=newgame.resources;
+    }
+
 
     pub fn change_player_location_x(&mut self, x: f32) {
         self.player.add_cords(&Cordinates::from(x, 0.0));

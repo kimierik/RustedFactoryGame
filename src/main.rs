@@ -1,7 +1,10 @@
 use ggez::event::EventHandler;
-use ggez::graphics::{self, Canvas, Color};
+use ggez::graphics::{self, Canvas, Color, DrawParam};
 use std::time::Duration;
 use strum::IntoEnumIterator;
+
+
+use ggez_egui::egui;
 
 mod drawables_trait;
 mod game_state;
@@ -33,7 +36,31 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
             self.reset_time_since_collect();
         }
 
-        //println!("{:?}",self.get_map());
+
+        //handle widget interactions
+		let egui_ctx = self.egui_backend.ctx();
+
+		egui::Window::new("egui-window").default_pos([GAME_SCREENW,300.0]).show(&egui_ctx, |ui| {
+			ui.label("a very nice gui :3");
+			if ui.button("start new game").clicked() {
+                let state=MainState::new();
+                self.hotload_data(state);
+			}
+			if ui.button("load game").clicked() {
+                let state=serialisation::load_game("test_save.json");
+                self.hotload_data(state.unwrap());
+			}
+
+			if ui.button("quit").clicked() {
+				ctx.request_quit();
+			}
+		});
+
+		self.egui_backend.update(ctx);
+
+        
+
+
 
         Ok(())
     }
@@ -79,6 +106,8 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
             );
         }
 
+        canvas.draw(&self.egui_backend, DrawParam::default());
+
         //vv puts everything we just draw to the ctx
         canvas.finish(ctx)
     }
@@ -89,58 +118,15 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 //give possibility to name the save 
 //when ypu input save it asks for the save name. then it names it when saved
 //then when we load we also save the load files name
-fn main() -> ggez::GameResult {
-    loop {
-        let mut user_game_save_choise = String::new();
-        println!("1: New Game \n2: Load Game");
+fn main() {
 
-        std::io::stdin()
-            .read_line(&mut user_game_save_choise)
-            .expect("failed line read");
-
-        let user_game_save_choise: u32 = match user_game_save_choise.trim().parse() {
-            Ok(num) => num,
-            Err(_) => {
-                println!("incorrect input: not a number");
-                continue;
-            }
-        };
-
-        let choise = match user_game_save_choise {
-            1 => serialisation::GameOptions::NewGame,
-            2 => {
-                println!("name of the save file? ");
-                let mut input_name: String = String::new();
-                std::io::stdin()
-                    .read_line(&mut input_name)
-                    .expect("failed line read");
-                serialisation::GameOptions::LoadGame(input_name.trim().to_string())
-            }
-
-            _ => {
-                println!("{} is incorrect input", user_game_save_choise);
-                continue;
-            }
-        };
-
-        let state: Option<MainState> = match choise {
-            GameOptions::NewGame => Some(MainState::new()),
-            GameOptions::LoadGame(filename) => serialisation::load_game(&filename),
-        };
-
-        match state {
-            Some(state) => {
-                //ctx used to be mut, idk if needed. started complaining
-                let (ctx, event_loop) = ggez::ContextBuilder::new("gametest", "kimierik")
-                    .window_mode(
-                        ggez::conf::WindowMode::default()
-                            .dimensions(GAME_SCREENW + UIX, GAME_SCREENY + UIY),
-                    )
-                    .build()
-                    .expect("cb ERROR");
-                ggez::event::run(ctx, event_loop, state)
-            }
-            None => continue,
-        }
-    }
+    let state =MainState::new();
+    let (ctx, event_loop) = ggez::ContextBuilder::new("gametest", "kimierik")
+        .window_mode(
+            ggez::conf::WindowMode::default()
+                .dimensions(GAME_SCREENW + UIX, GAME_SCREENY + UIY),
+        )
+        .build()
+        .expect("cb ERROR");
+    ggez::event::run(ctx, event_loop, state)
 }
