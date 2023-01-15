@@ -1,4 +1,5 @@
 use json::JsonValue;
+use strum::IntoEnumIterator;
 
 use super::buildings::material::Material;
 use super::buildings::material::MaterialValue;
@@ -38,33 +39,44 @@ impl PermanentGameResources{
     }
 
 
-    //needs to be updated for every added resource
-    //make into loop ot somehting
     pub fn get_serialisable_materials_info()->Vec<(Material,MaterialValue)>{
         let mut retvec=vec![];
-        retvec.push( (Material::Money, MaterialValue::I32(0)) );
-        retvec.push( (Material::Rock, MaterialValue::I32(0)) );
-
+        for material in Material::iter(){
+            retvec.push((material,Self::get_default_material(material)))
+        }
         retvec
     }
 
 
-    //needs to be updated for every added resource
+    //TODO this needs to be changed to work with f32 
+    //currently only calling getint
+    //maybe implement MaterialValue into JsonValue
     pub fn get_as_serialisable(&self)->JsonValue{
         let mut returned_json = json::JsonValue::new_object();
-        returned_json[Material::Money.to_string()]=self.money.into();
-        returned_json[Material::Rock.to_string()]=self.rock.into();
+        for material in Material::iter(){
+            returned_json[material.to_string()]=self.get_material(material).get_int().into();
 
+        }
         returned_json
     }
 
 
-    pub fn get_money(&self)->&i32{
-        &self.money
+
+    pub fn get_material(&self,mat:Material)->MaterialValue{
+        match mat {
+            Material::Rock=>MaterialValue::I32(self.rock),
+            Material::Money=>MaterialValue::I32(self.money),
+        }
     }
-    pub fn get_rock(&self)->&i32{
-        &self.rock
+
+    pub fn get_default_material(mat:Material)->MaterialValue{
+        match mat {
+            Material::Rock=>MaterialValue::I32(0),
+            Material::Money=>MaterialValue::I32(0),
+        }
     }
+
+
 
     //this feels bad
     pub fn has_more_than(&self,mat:&Material,compared_val:MaterialValue)->bool{
@@ -190,14 +202,18 @@ impl GameResources {
      * */
 
 
-    pub fn get_money(&self) -> &i32 {
-        &self.perm_resources.get_money()
+    /*
+     * dead code
+    pub fn get_money(&self) -> i32 {
+        self.perm_resources.get_material(Material::Money).get_int()
     }
+     * */
+
 
     pub fn to_string(&self) -> String {
         format!(
             "money: {} \ncurrent income: {}\nrock: {}",
-            self.perm_resources.get_money(), self.last_collection_income,self.perm_resources.get_rock()
+            self.perm_resources.get_material(Material::Money), self.last_collection_income,self.perm_resources.get_material(Material::Rock).get_int()
         )
     }
 }

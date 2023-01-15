@@ -17,7 +17,6 @@ use drawables_trait::MakeDrawable;
 use game_state::buildings::state::State;
 use game_state::MainState;
 
-use crate::serialisation::GameOptions;
 
 const GAME_SCREENW: f32 = 600.0;
 const GAME_SCREENY: f32 = 600.0;
@@ -29,8 +28,12 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
     fn update(&mut self, ctx: &mut ggez::Context) -> ggez::GameResult {
         //handle keyboard inputs. and do appropriate reactions
         inputs::handle_keyboard_inputs(self, ctx);
+
+
+        //calculate production here
+        //how mutch rn, how mutch after
+        //we can loop to make some vec with appropriate data i think
         //do loop through all tiles and make money out of them
-        //this needs to be put to a stopwatch
         if self.get_time_since_collect().elapsed() > Duration::from_secs(1) {
             self.loop_tiles_and_apply_effect();
             self.reset_time_since_collect();

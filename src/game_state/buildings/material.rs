@@ -4,13 +4,14 @@ use strum::IntoEnumIterator;
 
 //simple way to give i32 or f32 as argument witout using generics
 #[allow(dead_code)]
+#[derive(Debug)]
 pub enum MaterialValue{
     I32(i32),
     F32(f32),
 }
 
 
-#[derive(EnumIter, Debug, Clone)]
+#[derive(EnumIter, Debug, Clone,Copy)]
 pub enum Material {
     Money,
     Rock,
@@ -38,6 +39,25 @@ impl std::fmt::Display for Material {
 }
 
 
+
+impl MaterialValue{
+    pub fn get_int(&self)->i32{
+        match self {
+            Self::I32(bal)=>bal.clone(),
+            Self::F32(bal)=>bal.clone() as i32,
+        }
+    }
+    pub fn get_float(&self)->f32{
+        match self {
+            Self::I32(bal)=>bal.clone() as f32,
+            Self::F32(bal)=>bal.clone() ,
+        }
+    }
+
+}
+
+
+
 //this is implemented so we can flip a material value
 //usefull for minus operations
 impl std::ops::Neg for MaterialValue{
@@ -49,7 +69,14 @@ impl std::ops::Neg for MaterialValue{
         }
     }
 
-
 } 
 
+impl std::fmt::Display for MaterialValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::I32(val)=> write!(f, "{:?}", val),
+            Self::F32(val)=>write!(f, "{:?}", val),
+        }
+    }
+}
 
