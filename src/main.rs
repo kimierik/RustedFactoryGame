@@ -10,6 +10,7 @@ mod drawables_trait;
 mod game_state;
 mod inputs;
 mod serialisation;
+mod ui;
 //cordinate and input does not need to be in game state
 //lets do propper implementation
 
@@ -41,32 +42,7 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 
 
         //handle widget interactions
-		let egui_ctx = self.egui_backend.ctx();
-
-		egui::Window::new("menu widget").default_pos([GAME_SCREENW,300.0]).show(&egui_ctx, |ui| {
-			ui.label(" ");
-
-			if ui.button("start new game").clicked() {
-                let state=MainState::new();
-                self.hotload_data(state);
-			}
-			if ui.button("save game").clicked() {
-                serialisation::save_game(&self);
-			}
-			if ui.button("load game").clicked() {
-                let state=serialisation::load_game("test_save.json");
-                self.hotload_data(state.unwrap());
-			}
-
-			if ui.button("quit").clicked() {
-				ctx.request_quit();
-			}
-		});
-
-		self.egui_backend.update(ctx);
-
-        
-
+        ui::handle_egui_widget(self,ctx);
 
 
         Ok(())

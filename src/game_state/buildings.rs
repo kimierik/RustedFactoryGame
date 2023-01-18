@@ -11,6 +11,8 @@ use super::cordinate::Cordinates;
 #[derive( Debug, Clone)]
 pub enum BuildingType{
     Production(Material),
+
+    //f32 is the amount that cordinate is buffed by
     Buff(Vec<(f32,Cordinates)>),//affected tiles relative to the tiles own cordinates
 }
 
