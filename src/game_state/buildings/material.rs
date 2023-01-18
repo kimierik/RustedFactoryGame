@@ -4,7 +4,7 @@ use strum::IntoEnumIterator;
 
 //simple way to give i32 or f32 as argument witout using generics
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug,Clone,Copy)]
 pub enum MaterialValue{
     I32(i32),
     F32(f32),
@@ -53,6 +53,13 @@ impl MaterialValue{
             Self::F32(bal)=>bal.clone() ,
         }
     }
+    pub fn get_string(&self)->String{
+        match self {
+            Self::I32(val)=>val.to_string(),
+            Self::F32(val)=>val.to_string(),
+        }
+
+    }
 
 }
 
@@ -70,6 +77,35 @@ impl std::ops::Neg for MaterialValue{
     }
 
 } 
+
+
+//if mvi32-mvi32 should return mvi32
+impl std::ops::Sub for MaterialValue {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self::Output {
+        match self {
+            Self::I32(val)=>{
+                Self::I32(val-rhs.get_int())
+            },
+
+            Self::F32(val)=>{
+                Self::F32(val-rhs.get_float())
+            }
+        }
+    }
+}
+
+impl std::ops::Add for MaterialValue {
+    type Output = Self;
+    fn add(self, rhs: Self) -> Self::Output {
+        -(-self-rhs)
+    }
+    
+}
+
+
+
+
 
 impl std::fmt::Display for MaterialValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

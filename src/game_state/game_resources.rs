@@ -38,6 +38,14 @@ impl PermanentGameResources{
 
     }
 
+    pub fn get_current_materials(&self)->Vec<(Material,MaterialValue)>{
+        let mut ret :Vec<(Material,MaterialValue)>=vec![];
+        for mat in Material::iter(){
+            ret.push((mat,self.get_material(mat)));
+        }
+        ret
+    }
+
 
     pub fn get_serialisable_materials_info()->Vec<(Material,MaterialValue)>{
         let mut retvec=vec![];
@@ -139,6 +147,7 @@ impl PermanentGameResources{
 
 pub struct GameResources {
     perm_resources:PermanentGameResources,
+    material_last_cycle_income:Vec<(Material,MaterialValue)>,
     temp_money: i32,
     last_collection_income: i32,
 }
@@ -147,6 +156,8 @@ impl GameResources {
     pub fn make_instance() -> Self {
         GameResources {
             perm_resources:PermanentGameResources::create_empty(),
+
+            material_last_cycle_income:vec![],
             //these 2 are usef for calculating income
             //make another one that is scaleable
             temp_money: 0,
@@ -158,7 +169,12 @@ impl GameResources {
     //mayby make saved res its own thing
 
     pub fn make_instance_with_permanent(res:PermanentGameResources)->Self{
-        GameResources { perm_resources: res, temp_money: 0,  last_collection_income: 0 }
+        GameResources { perm_resources: res, temp_money: 0,  last_collection_income: 0 ,
+            material_last_cycle_income:vec![],}
+    }
+
+    pub fn set_income_db(&mut self, new_db:Vec<(Material,MaterialValue)>){
+        self.material_last_cycle_income=new_db;
     }
 
 
@@ -194,26 +210,18 @@ impl GameResources {
         self.temp_money += value;
     }
 
-    //permanent money subtract
-    /*
-    pub fn subtract_money(&mut self, value: i32) {
-        self.perm_resources.add_to_resource(MaterialValue::I32(-value), Material::Money) ;
+    pub fn get_income_string(&self)->String{
+        let mut ret :String=String::new();
+        for (mat,matval) in self.material_last_cycle_income.iter(){
+            ret+= format!("{} produced : {} \n",mat,matval.get_string()).as_str();
+        }
+        ret
     }
-     * */
-
-
-    /*
-     * dead code
-    pub fn get_money(&self) -> i32 {
-        self.perm_resources.get_material(Material::Money).get_int()
-    }
-     * */
-
 
     pub fn to_string(&self) -> String {
         format!(
-            "money: {} \ncurrent income: {}\nrock: {}",
-            self.perm_resources.get_material(Material::Money), self.last_collection_income,self.perm_resources.get_material(Material::Rock).get_int()
+            "money: {} \nrock: {} \n Income: \n{}",
+            self.perm_resources.get_material(Material::Money), self.perm_resources.get_material(Material::Rock).get_int(), self.get_income_string()
         )
     }
 }

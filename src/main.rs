@@ -1,3 +1,4 @@
+use game_state::buildings::material::MaterialValue;
 use ggez::event::EventHandler;
 use ggez::graphics::{self, Canvas, Color, DrawParam};
 use std::time::Duration;
@@ -17,6 +18,7 @@ mod ui;
 use drawables_trait::MakeDrawable;
 use game_state::buildings::state::State;
 use game_state::MainState;
+use game_state::buildings::material::Material;
 
 
 const GAME_SCREENW: f32 = 600.0;
@@ -36,9 +38,25 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
         //we can loop to make some vec with appropriate data i think
         //do loop through all tiles and make money out of them
         if self.get_time_since_collect().elapsed() > Duration::from_secs(1) {
+           let before=self.get_resource().get_permanent_resources().get_current_materials(); 
+
             self.loop_tiles_and_apply_effect();
             self.reset_time_since_collect();
+
+           let after=self.get_resource().get_permanent_resources().get_current_materials(); 
+
+           //compare before and after vectors MaterialValues and get difference
+
+           let mut ret:Vec<(Material,MaterialValue)>=vec![];
+           for (index,(mat,val)) in before.iter().enumerate(){
+               let matval =after[index].1 -val.clone();
+               ret.push((mat.clone(),matval));
+           }
+           self.get_mut_resource().set_income_db(ret);
+
+          
         }
+
 
 
         //handle widget interactions
@@ -97,10 +115,7 @@ impl EventHandler<ggez::GameError> for game_state::MainState {
 }
 
 //TODO
-//maybe make loop into its own function
-//give possibility to name the save 
-//when ypu input save it asks for the save name. then it names it when saved
-//then when we load we also save the load files name
+//name the save
 fn main() {
 
     let mut state =MainState::new();

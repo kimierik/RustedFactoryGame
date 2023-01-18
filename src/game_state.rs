@@ -219,4 +219,8 @@ impl MainState {
     pub fn get_resource(&self) -> &GameResources {
         &self.resources
     }
+
+    pub fn get_mut_resource(&mut self) -> &mut GameResources {
+        &mut self.resources
+    }
 }
